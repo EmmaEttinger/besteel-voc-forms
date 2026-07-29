@@ -1,0 +1,500 @@
+:root {
+  /* Besteel Group core palette — BeSteel_Guidelines2024_R2-08 */
+  --deep-ocean: #384455;
+  --deep-ocean-light: #4c5b70;
+  --sunset-yellow: #fdb515;
+  --sunset-yellow-dark: #d99900;
+  --blue-steel: #92a5b0;
+  --blue-spark: #54bdeb;
+  --khaki-brown: #a18b67;
+  --ink: #000000;
+
+  /* Functional aliases — kept so the rest of the engine reads by role, not brand name */
+  --navy: var(--deep-ocean);
+  --navy-light: var(--deep-ocean-light);
+  --accent: var(--sunset-yellow);
+  --accent-dark: var(--sunset-yellow-dark);
+  --accent-ink: var(--deep-ocean); /* text sitting on top of the yellow accent */
+
+  /* Semantic colours — intentionally NOT brand colours, so pass/fail always reads
+     the same regardless of theme (green = correct/competent, red = incorrect) */
+  --green: #1e8e3e;
+  --green-bg: #e6f4ea;
+  --red: #c5221f;
+  --red-bg: #fce8e6;
+
+  --grey-bg: #f2f4f5; /* light neutral tinted slightly toward Blue Steel, not a flat grey */
+  --border: #dde3e6;
+  --text: #232b35;
+  --text-muted: #5c6773;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(56, 68, 85, 0.1);
+  --shadow-lg: 0 8px 30px rgba(56, 68, 85, 0.22);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Open Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--grey-bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.voc-header {
+  background: linear-gradient(135deg, var(--deep-ocean), var(--deep-ocean-light));
+  color: #fff;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.voc-header img.voc-logo {
+  max-height: 44px;
+  margin-bottom: 14px;
+}
+
+.voc-header h1 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-wrap: balance;
+}
+
+.voc-header p {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.voc-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 16px 80px;
+}
+
+.voc-progress-wrap {
+  position: sticky;
+  top: 0;
+  background: var(--grey-bg);
+  padding: 10px 0 14px;
+  z-index: 20;
+}
+
+.voc-progress-bar {
+  height: 10px;
+  border-radius: 6px;
+  background: #e2e5ea;
+  overflow: hidden;
+}
+
+.voc-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.35s ease;
+}
+
+.voc-progress-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  text-align: right;
+}
+
+.voc-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.voc-card h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 14px;
+  color: var(--deep-ocean);
+}
+
+.voc-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--khaki-brown);
+  margin: 28px 0 10px;
+}
+
+.voc-field {
+  margin-bottom: 14px;
+}
+
+.voc-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.voc-field label .req {
+  color: var(--red);
+  margin-left: 2px;
+}
+
+.voc-field input[type="text"],
+.voc-field input[type="date"],
+.voc-field input[type="datetime-local"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+.voc-field input:focus {
+  outline: 2px solid var(--blue-spark);
+  outline-offset: 1px;
+}
+
+.voc-question {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.voc-question.is-correct {
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+
+.voc-question-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.voc-qnum {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voc-question.is-correct .voc-qnum {
+  background: var(--green);
+}
+
+.voc-question-text {
+  font-weight: 600;
+  font-size: 0.97rem;
+  flex: 1;
+}
+
+.voc-options {
+  display: grid;
+  gap: 8px;
+}
+
+.voc-option {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: #fafbfc;
+  font-family: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.voc-option:hover:not(:disabled) {
+  border-color: var(--blue-spark);
+  background: #fff;
+}
+
+.voc-option:disabled {
+  cursor: default;
+}
+
+.voc-option .voc-opt-dot {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+}
+
+.voc-option.correct {
+  background: var(--green-bg);
+  border-color: var(--green);
+  font-weight: 600;
+}
+
+.voc-option.correct .voc-opt-dot {
+  border-color: var(--green);
+  background: var(--green);
+  position: relative;
+}
+
+.voc-option.wrong-flash {
+  background: var(--red-bg);
+  border-color: var(--red);
+  animation: voc-shake 0.4s ease;
+}
+
+@keyframes voc-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.voc-attempts {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* Popup bubble for incorrect answers */
+.voc-bubble {
+  position: fixed;
+  z-index: 1000;
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  max-width: 260px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+
+.voc-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 20px;
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: var(--navy) transparent transparent transparent;
+}
+
+.voc-bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.voc-bubble.bubble-red {
+  background: var(--red);
+}
+
+.voc-bubble.bubble-red::after {
+  border-color: var(--red) transparent transparent transparent;
+}
+
+/* Rating buttons (Competent / Not Competent) */
+.voc-rating {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.voc-rate-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: #fafbfc;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.voc-rate-btn.competent.active {
+  background: var(--green-bg);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.voc-rate-btn.not-competent.active {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.voc-procedure {
+  background: #f7f8fa;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin: 6px 0 4px;
+}
+
+.voc-procedure ul { margin: 4px 0 0; padding-left: 18px; }
+
+.voc-note {
+  background: #f4f0ea;
+  border: 1px solid var(--khaki-brown);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  font-size: 0.88rem;
+  color: #5f5138;
+}
+
+.voc-signature-pad {
+  width: 100%;
+  height: 160px;
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
+  background: #fff;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.voc-sig-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.voc-link-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  color: var(--deep-ocean);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px;
+  text-decoration: underline;
+}
+
+.voc-submit-bar {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding: 14px 16px;
+  margin-top: 20px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+}
+
+.voc-submit-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.voc-submit-btn:disabled {
+  background: #c7ccd3;
+  color: #6b7278;
+  cursor: not-allowed;
+}
+
+.voc-submit-btn:not(:disabled):hover {
+  background: var(--accent-dark);
+}
+
+.voc-submit-hint {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.voc-error-msg {
+  color: var(--red);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.voc-success {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.voc-success .voc-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+
+.voc-success h2 { color: var(--navy); margin-bottom: 8px; }
+.voc-success p { color: var(--text-muted); }
+
+.voc-hidden { display: none !important; }
+
+.voc-gate-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+@media (max-width: 480px) {
+  .voc-header h1 { font-size: 1.25rem; }
+  .voc-card, .voc-question { padding: 15px; }
+}

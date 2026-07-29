@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Verification of Competency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/voc-engine.css" />
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">H7MPAZ3PSZVR-62328743-131827</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">c90710d0-8eb0-45cf-8dd2-88a44e21f919</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://besteel.sharepoint.com/sites/Management/_layouts/15/DocIdRedir.aspx?ID=H7MPAZ3PSZVR-62328743-131827, H7MPAZ3PSZVR-62328743-131827</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+<div id="voc-root">
+  <div style="max-width:600px;margin:60px auto;text-align:center;color:#5a6472;font-family:sans-serif;">
+    Loading VOC form...
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/voc-engine.js"></script>
+<script>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const formId = params.get("form");
+    const root = document.getElementById("voc-root");
+
+    if (!formId) {
+      root.innerHTML =
+        '<div style="max-width:600px;margin:60px auto;text-align:center;color:#c5221f;font-family:sans-serif;">' +
+        "No VOC specified. Open this page with a link like <code>voc.html?form=angle-grinder</code>, or go to " +
+        '<a href="index.html">the VOC index</a>.</div>';
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "data/" + formId + ".js";
+    script.onload = function () {
+      if (window.VOC_DATA) {
+        VOCEngine.init(window.VOC_DATA);
+      } else {
+        root.innerHTML =
+          '<div style="max-width:600px;margin:60px auto;text-align:center;color:#c5221f;font-family:sans-serif;">' +
+          "This VOC's data file did not load correctly.</div>";
+      }
+    };
+    script.onerror = function () {
+      root.innerHTML =
+        '<div style="max-width:600px;margin:60px auto;text-align:center;color:#c5221f;font-family:sans-serif;">' +
+        'Could not find a VOC named "' + formId + '". Check the link and try again, or go to ' +
+        '<a href="index.html">the VOC index</a>.</div>';
+    };
+    document.body.appendChild(script);
+  })();
+</script>
+</body>
+</html>

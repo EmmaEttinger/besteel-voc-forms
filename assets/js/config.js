@@ -36,7 +36,7 @@ window.STATIONERY_CONFIG = {
 // and "Print / Save as PDF" always works regardless.
 // ============================================================
 window.PRESTART_CONFIG = {
-  submitUrl: "",
+  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/19/workflows/f70a3c420d044c4dafe25beda46bd884/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OZhrv3NfyAfWWVQBRXmT9Ozj8L5smEpb8geIcBFi8ns",
   companyName: "Besteel Frames",
   logoUrl: "assets/img/besteel-icon.png"
 };

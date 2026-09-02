@@ -63,13 +63,51 @@ current body/heading font. Green/red are semantic (correct/incorrect,
 competent/not competent) and intentionally **not** brand colours — don't
 reassign them to match the accent palette even if it looks more "on brand."
 
+## Stationery Order — a separate tool in this same repo
+
+`stationery-order.html` is not a VOC — it's a shopping-list style form for
+staff to order pre-approved Officeworks stationery, built as its own
+standalone set of files (`assets/css/stationery.css`,
+`assets/js/stationery-engine.js`, `data/stationery-items.js`) so it can
+never regress the VOC engine and vice versa. Full details — including where
+it's actually hosted (not this repo's normal deployment path) and how to
+add items to the catalogue — are in SETUP-GUIDE.md section **"3b.
+Stationery Order."** Status: **live and working end-to-end** as of
+2026-08-19 (hosted on GitHub Pages, linked from a SharePoint Dashboard
+card, submissions flow into a SharePoint list via Power Automate).
+
+## Pre-Start Checklists — a third separate tool in this same repo
+
+`prestart-checklist.html` is also not a VOC — it's a Pass/Fail/N-A equipment
+pre-start inspection (Truck/Semi-Trailer, Forklift, Gantry Crane, Vehicle
+Loading Crane, general Equipment — sourced from SafetyCulture PDF exports),
+built as its own standalone set of files (`assets/css/prestart.css`,
+`assets/js/prestart-engine.js`, `data/prestart-*.js`) for the same reason
+Stationery Order got its own files: so it can never regress the VOC quiz
+engine and vice versa. One engine, many data files, loaded via
+`prestart-checklist.html?form=<id>` — same pattern as `voc.html`. Full
+details are in SETUP-GUIDE.md section **"3c. Pre-Start Checklists."**
+Status: **Truck / Semi-Trailer built and working** (2026-09-02); SharePoint
+submission not yet wired up (`PRESTART_CONFIG.submitUrl` is blank — see
+below); Forklift, Gantry Crane, Vehicle Loading Crane, and general Equipment
+checklists still to build from the PDFs already supplied.
+
 ## Status / what's outstanding
 
 - Angle Grinder VOC: content + branding done, reviewed by the user.
-- ~20 more VOCs still to add — same pattern, just new data files.
-- SharePoint submission: `assets/js/config.js` → `submitUrl` is still blank.
-  Needs the Power Automate flow described in SETUP-GUIDE.md before this goes
-  live; until then, submissions download as JSON instead of posting anywhere.
+- Storage & Handling of Steel in Warehouse Racking VOC: done.
+- ~19 more VOCs still to add — same pattern, just new data files.
+- SharePoint submission: `assets/js/config.js` → `VOC_CONFIG.submitUrl` is
+  still blank. Needs the Power Automate flow described in SETUP-GUIDE.md
+  before this goes live; until then, submissions download as JSON instead
+  of posting anywhere.
+- Stationery Order tool: complete and live — see above, no outstanding work
+  unless the catalogue needs new items or reporting gets requested later.
+- Pre-Start Checklists: Truck/Semi-Trailer built (see above). Still need:
+  `PRESTART_CONFIG.submitUrl` (new Power Automate flow + new SharePoint
+  list, not the VOC or stationery ones), the SharePoint page/button URL to
+  link out to once hosted, and the other 4 equipment checklists as new
+  `data/prestart-*.js` files.
 - No test suite / build tooling — this is intentionally plain static files.
   Verify changes by opening `index.html` directly in a browser (or serving
   the folder over any static HTTP server) and clicking through a VOC.

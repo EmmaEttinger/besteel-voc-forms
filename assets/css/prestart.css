@@ -1,0 +1,434 @@
+/* ============================================================
+   PRE-START CHECKLIST — styles
+   Palette duplicated from voc-engine.css / stationery.css
+   (BeSteel_Guidelines2024_R2-08) so this tool stays decoupled
+   from the VOC quiz engine and the stationery order tool.
+   ============================================================ */
+
+:root {
+  --deep-ocean: #384455;
+  --deep-ocean-light: #4c5b70;
+  --sunset-yellow: #fdb515;
+  --sunset-yellow-dark: #d99900;
+  --blue-steel: #92a5b0;
+  --blue-spark: #54bdeb;
+  --khaki-brown: #a18b67;
+
+  --green: #1e8e3e;
+  --green-bg: #e6f4ea;
+  --red: #c5221f;
+  --red-bg: #fce8e6;
+  --grey-btn-bg: #eef1f2;
+
+  --grey-bg: #f2f4f5;
+  --border: #dde3e6;
+  --text: #232b35;
+  --text-muted: #5c6773;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(56, 68, 85, 0.1);
+  --shadow-lg: 0 8px 30px rgba(56, 68, 85, 0.22);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Open Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--grey-bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.ps-header {
+  background: var(--deep-ocean);
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ps-header img { height: 34px; }
+
+.ps-header h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ps-header p {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.ps-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 16px 100px;
+}
+
+.ps-banner {
+  background: var(--sunset-yellow);
+  color: var(--deep-ocean);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.ps-banner.ps-success {
+  background: var(--green);
+  color: #fff;
+}
+
+.ps-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 18px 20px;
+  margin-bottom: 16px;
+}
+
+.ps-card h2 {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--deep-ocean);
+  border-bottom: 2px solid var(--sunset-yellow);
+  padding-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ps-card h2 .ps-progress {
+  font-size: 0.72rem;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ps-field { margin-bottom: 14px; }
+.ps-field:last-child { margin-bottom: 0; }
+
+.ps-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+
+.ps-field input[type="text"],
+.ps-field input[type="datetime-local"],
+.ps-field select,
+.ps-field textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+.ps-field textarea { resize: vertical; min-height: 70px; }
+
+.ps-field input:focus,
+.ps-field select:focus,
+.ps-field textarea:focus {
+  outline: none;
+  border-color: var(--blue-spark);
+  box-shadow: 0 0 0 3px rgba(84, 189, 235, 0.25);
+}
+
+.ps-field-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ps-field-row .ps-field { flex: 1; min-width: 180px; }
+
+.ps-section-title {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--khaki-brown);
+  font-weight: 700;
+}
+
+.ps-section { margin-bottom: 16px; }
+.ps-section:last-child { margin-bottom: 0; }
+
+.ps-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.ps-section .ps-item:last-child { border-bottom: none; }
+
+.ps-item-label {
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 160px;
+}
+
+.ps-item.ps-answered.ps-fail { background: var(--red-bg); margin: 0 -18px; padding: 10px 18px; }
+.ps-item.ps-answered.ps-pass { background: var(--green-bg); margin: 0 -18px; padding: 10px 18px; }
+
+.ps-seg {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ps-seg button {
+  border: 1px solid var(--blue-steel);
+  background: var(--grey-btn-bg);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.ps-seg button:hover { border-color: var(--sunset-yellow-dark); }
+
+.ps-seg button.ps-active[data-val="Pass"] {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.ps-seg button.ps-active[data-val="Fail"] {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.ps-seg button.ps-active[data-val="N/A"] {
+  background: var(--deep-ocean);
+  border-color: var(--deep-ocean);
+  color: #fff;
+}
+
+.ps-radio-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ps-radio-row button {
+  border: 1px solid var(--blue-steel);
+  background: var(--grey-btn-bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.ps-radio-row button.ps-active {
+  background: var(--deep-ocean);
+  border-color: var(--deep-ocean);
+  color: #fff;
+}
+
+.ps-radio-row button.ps-active[data-val="No"][data-warn="true"] {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.ps-photo-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ps-photo-preview img {
+  max-width: 120px;
+  max-height: 90px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.ps-photo-remove {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ps-checkbox-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ps-checkbox-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.ps-conditional {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.ps-submit-bar {
+  position: sticky;
+  bottom: 0;
+  background: rgba(242, 244, 245, 0.97);
+  backdrop-filter: blur(4px);
+  padding: 14px 16px 20px;
+  border-top: 1px solid var(--border);
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ps-submit-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--sunset-yellow);
+  color: var(--deep-ocean);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.ps-submit-btn:disabled {
+  background: var(--blue-steel);
+  color: #fff;
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ps-print-btn {
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid var(--deep-ocean);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--deep-ocean);
+  cursor: pointer;
+}
+
+.ps-print-btn:hover { background: var(--grey-bg); }
+
+.ps-submit-hint {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.ps-toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--deep-ocean);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.9rem;
+  z-index: 100;
+  max-width: 90%;
+  text-align: center;
+}
+
+.ps-toast.error { background: var(--red); }
+
+.hidden { display: none !important; }
+
+/* ------------------------------------------------------------
+   Print / "Save as PDF" — triggered by the browser's print
+   dialog. Strips interactive chrome, prints a clean record of
+   every item and the answer actually selected.
+   ------------------------------------------------------------ */
+@media print {
+  body { background: #fff; }
+
+  .ps-submit-bar,
+  .ps-print-btn,
+  .ps-toast,
+  .ps-photo-remove {
+    display: none !important;
+  }
+
+  .ps-header {
+    background: #fff !important;
+    color: var(--deep-ocean) !important;
+    border-bottom: 2px solid var(--deep-ocean);
+  }
+
+  .ps-card {
+    box-shadow: none;
+    border: 1px solid #000;
+    break-inside: avoid;
+  }
+
+  .ps-seg button,
+  .ps-radio-row button {
+    display: none;
+  }
+
+  .ps-seg::after,
+  .ps-radio-row::after {
+    content: attr(data-print-value);
+    font-weight: 700;
+    border: 1px solid var(--text);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 0.85rem;
+  }
+
+  .ps-item.ps-answered.ps-fail,
+  .ps-item.ps-answered.ps-pass {
+    margin: 0;
+    padding: 10px 0;
+  }
+}

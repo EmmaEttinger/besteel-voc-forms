@@ -345,20 +345,52 @@ if someone attaches one) — same handling as the VOC signature pad. Store it
 as-is in a "Multiple lines of text" column, or add a Power Automate step
 that decodes it into a SharePoint attachment.
 
-**Keeping a copy / PDF export.** There's no server-side PDF generation —
-after Submit, a **"Print / Save as PDF"** button appears, which opens the
-browser's own print dialog against a print-specific stylesheet that hides
-all the interactive buttons and shows a clean pass/fail record instead;
-choosing "Save as PDF" as the destination in that dialog is how staff (or
-you) get a PDF copy. This works even before `PRESTART_CONFIG.submitUrl` is
-configured, and independently of whether the SharePoint submission
-succeeds — so a completed checklist can always be kept as a PDF or referred
-back to on-screen, regardless of connectivity. If you want every submission
-automatically archived as a PDF in a SharePoint document library (not just
-available on request from whoever filled it in), that needs a small
-addition to the Power Automate flow (e.g. a "Convert to PDF" / HTML-to-PDF
-step) — a reasonable follow-up once the base flow is live, not something to
-build speculatively now.
+**Keeping a copy / PDF export.** Two ways, both without any server-side PDF
+service:
+
+1. **On-screen, on demand** — after Submit, a **"Print / Save as PDF"**
+   button appears, which opens the browser's own print dialog against a
+   print-specific stylesheet that hides the interactive buttons and shows
+   a clean pass/fail record; choosing "Save as PDF" as the destination is
+   how anyone with the link gets a copy. Works even without
+   `PRESTART_CONFIG.submitUrl` configured, and independently of whether the
+   SharePoint submission succeeds.
+2. **Automatic, attached to the SharePoint item** — every submission also
+   builds a real PDF client-side (via jsPDF, loaded from cdnjs — see the
+   `<script>` tags in `prestart-checklist.html`) and sends it as
+   `pdfDataUrl` (a base64 data URI) + `pdfFileName` alongside the rest of
+   the JSON payload. **This needs one addition to the Power Automate flow**
+   to actually land as a SharePoint attachment — the payload field exists
+   already, but nothing writes it anywhere until you add this step:
+   - **+ New step → Condition**: `pdfDataUrl` (from trigger dynamic
+     content) **is not equal to** *(leave the value blank)* — skips
+     cleanly on the rare submission where PDF generation failed
+     client-side (missing image, unsupported browser, etc.) rather than
+     erroring the whole flow.
+   - Inside the **Yes** branch, **+ New step → SharePoint → Add
+     attachment**:
+     - Site Address / List Name: same as the "Create item" step above.
+     - Id: the **ID** from the "Create item" step's output (dynamic
+       content) — this is why Add attachment must come *after* Create
+       item, not before.
+     - File Name: `pdfFileName` (dynamic content).
+     - File Content: switch to **Expression** and enter
+       `base64ToBinary(substring(triggerBody()?['pdfDataUrl'], add(indexOf(triggerBody()?['pdfDataUrl'], ','), 1)))`
+       — `pdfDataUrl` arrives as `data:application/pdf;base64,<data>`,
+       so this strips everything up to and including the comma before
+       decoding.
+   - No new SharePoint column needed — attachments are a built-in list
+     item feature, already on by default.
+
+   **Gotcha already hit and fixed:** the first version of this feature fed
+   the brand logo (a 4501×4501px source PNG, shown at 34px on screen)
+   straight into jsPDF's `addImage()`, which embeds pixel data close to
+   1:1 rather than re-compressing — that produced a **100MB+ "PDF"** from
+   a 300KB logo file. Fixed by downscaling every image (logo and any
+   attached defect photo) through an offscreen `<canvas>` before handing
+   it to jsPDF — see `loadScaledImageDataUrl` in `prestart-engine.js`. If
+   you ever add another image to the PDF, reuse that helper rather than
+   calling `addImage()` on a raw source image.
 
 **Adding the remaining checklists** (Forklift, Gantry Crane, Vehicle
 Loading Crane, general Equipment). Same fastest-path as VOCs: paste the raw

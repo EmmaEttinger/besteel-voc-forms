@@ -506,6 +506,187 @@ window.PrestartEngine = (function () {
       };
     }
 
+    // Builds a real, text-searchable PDF client-side (no server round
+    // trip) so a copy can be auto-attached to the SharePoint item on
+    // every submission, not just when someone clicks Print / Save as
+    // PDF. Returns a data: URI string, or null if generation fails for
+    // any reason (missing jsPDF, unsupported browser, bad image data) —
+    // callers must treat that as "no PDF this time," never block submit.
+    async function buildPdfDataUrl(payload) {
+      if (!window.jspdf || !window.jspdf.jsPDF) return null;
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+        const marginX = 40;
+        const pageBottom = 780;
+        let y = 50;
+
+        if (config.logoUrl) {
+          try {
+            const logoDataUrl = await loadScaledImageDataUrl(config.logoUrl, 120, "image/png");
+            if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", marginX, y - 24, 26, 26);
+          } catch (e) {
+            /* logo is a nice-to-have, never block the PDF over it */
+          }
+        }
+
+        doc.setFontSize(15);
+        doc.setTextColor(56, 68, 85);
+        doc.text(payload.title, marginX + 34, y);
+        y += 16;
+        doc.setFontSize(9);
+        doc.setTextColor(120, 128, 138);
+        doc.text(config.companyName || "Besteel Frames", marginX + 34, y);
+        y += 26;
+
+        const details = [
+          [siteFieldLabel, payload.site],
+          ["Conducted on", payload.conductedOn],
+          ["Prepared by", payload.preparedBy],
+          ["Equipment", payload.equipmentAsset || payload.equipmentType || ""]
+        ].filter(([, v]) => v);
+
+        doc.setFontSize(10);
+        details.forEach(([label, value]) => {
+          doc.setTextColor(56, 68, 85);
+          doc.setFont(undefined, "bold");
+          doc.text(label + ":", marginX, y);
+          doc.setTextColor(35, 43, 53);
+          doc.setFont(undefined, "normal");
+          doc.text(String(value), marginX + 110, y);
+          y += 15;
+        });
+        y += 10;
+
+        payload.sections.forEach((section) => {
+          if (y > pageBottom - 60) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(161, 139, 103);
+          doc.text(section.name, marginX, y);
+          y += 8;
+
+          doc.autoTable({
+            startY: y,
+            margin: { left: marginX, right: marginX },
+            head: [["Item", "Result"]],
+            body: section.items.map((it) => [it.label, resultLabels[it.result] || it.result || "—"]),
+            styles: { fontSize: 9, cellPadding: 4 },
+            headStyles: { fillColor: [56, 68, 85], textColor: 255 },
+            didParseCell: (cellData) => {
+              if (cellData.section !== "body" || cellData.column.index !== 1) return;
+              const raw = section.items[cellData.row.index].result;
+              if (raw === "Fail") {
+                cellData.cell.styles.textColor = [197, 34, 31];
+                cellData.cell.styles.fontStyle = "bold";
+              } else if (raw === "Pass") {
+                cellData.cell.styles.textColor = [30, 142, 62];
+              }
+            }
+          });
+          y = doc.lastAutoTable.finalY + 18;
+        });
+
+        if (y > pageBottom - 100) {
+          doc.addPage();
+          y = 50;
+        }
+        doc.setFontSize(10);
+        doc.setFont(undefined, "bold");
+        doc.setTextColor(56, 68, 85);
+        doc.text(isNotesFinal ? "Notes / Defect Identified" : "Final Verification", marginX, y);
+        y += 16;
+
+        const finalRows = [];
+        if (payload.defectsIdentified) finalRows.push(["Defects Identified", payload.defectsIdentified]);
+        if (payload.safeToOperate) finalRows.push(["Safe to operate", payload.safeToOperate]);
+        if (payload.correctiveActionRequired) finalRows.push(["Corrective action required", payload.correctiveActionRequired]);
+        if (payload.correctiveActionDetails) {
+          finalRows.push([isNotesFinal ? "Notes" : "Details / evidence", payload.correctiveActionDetails]);
+        }
+        if (payload.notifyPeople && payload.notifyPeople.length) finalRows.push(["Notified", payload.notifyPeople.join(", ")]);
+        finalRows.push([personCompletingLabel, payload.personCompleting]);
+        finalRows.push(["Submitted at", new Date(payload.submittedAt).toLocaleString()]);
+
+        doc.setFontSize(10);
+        finalRows.forEach(([label, value]) => {
+          const lines = doc.splitTextToSize(String(value), 370);
+          if (y + lines.length * 13 > pageBottom) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(56, 68, 85);
+          doc.text(label + ":", marginX, y);
+          doc.setFont(undefined, "normal");
+          doc.setTextColor(35, 43, 53);
+          doc.text(lines, marginX + 150, y);
+          y += 13 * lines.length + 4;
+        });
+
+        if (payload.photoDataUrl) {
+          try {
+            const scaledPhoto = await loadScaledImageDataUrl(payload.photoDataUrl, 900, "image/jpeg");
+            if (scaledPhoto) {
+              if (y > pageBottom - 160) {
+                doc.addPage();
+                y = 50;
+              }
+              y += 6;
+              doc.setFont(undefined, "bold");
+              doc.text("Photo:", marginX, y);
+              y += 8;
+              doc.addImage(scaledPhoto, "JPEG", marginX, y, 220, 165);
+            }
+          } catch (e) {
+            /* unsupported image encoding — skip embedding, PDF still valid */
+          }
+        }
+
+        return doc.output("datauristring");
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Downscales an image (from a URL or an existing data: URL) via an
+    // offscreen canvas before jsPDF ever sees it. Source images can be
+    // far larger than they need to be for a PDF — the brand logo here
+    // is 4501x4501px despite showing at 34px on screen, and a phone
+    // camera defect photo can be similarly huge — and jsPDF embeds
+    // pixel data close to 1:1 rather than re-compressing, so skipping
+    // this step once produced a 100MB+ "PDF" from a 300KB logo.
+    // Resolves to null (never rejects) so a bad/unreachable image just
+    // means no image in the PDF, not a broken submit.
+    function loadScaledImageDataUrl(src, maxDim, mime) {
+      return new Promise((resolve) => {
+        if (!src) {
+          resolve(null);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+            const w = Math.max(1, Math.round(img.naturalWidth * scale));
+            const h = Math.max(1, Math.round(img.naturalHeight * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL(mime, 0.85));
+          } catch (e) {
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
     function downloadJson(payload) {
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -523,6 +704,9 @@ window.PrestartEngine = (function () {
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting…";
+
+      payload.pdfDataUrl = await buildPdfDataUrl(payload);
+      payload.pdfFileName = data.meta.formId + "-" + payload.submittedAt.slice(0, 10) + ".pdf";
 
       let success = false;
       if (config.submitUrl) {

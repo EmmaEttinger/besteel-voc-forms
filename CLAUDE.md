@@ -2,7 +2,11 @@
 
 Interactive Verification of Competency (VOC) forms for Besteel employees,
 replacing a Microsoft Forms setup that couldn't do retry-until-correct
-quizzing. Static HTML/CSS/JS — no build step, no framework, no dependencies.
+quizzing. Static HTML/CSS/JS — no build step, no framework, and no
+dependencies except one deliberate exception: the Pre-Start Checklists
+tool loads **jsPDF + jspdf-autotable from cdnjs** (see
+`prestart-checklist.html`) to generate a real PDF client-side for every
+submission. Nothing else in the repo needs a build step or a library.
 
 Full setup/operations doc: [SETUP-GUIDE.md](SETUP-GUIDE.md). Read that first
 for hosting, SharePoint/Power Automate wiring, and the branding rationale.

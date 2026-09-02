@@ -20,6 +20,14 @@ once pushed. Local `master` branch maps to GitHub's `main`; push with
 the single copy: edit here, commit, push, and the live site updates —
 no second repo to keep in sync.
 
+**Caching gotcha:** GitHub Pages caches JS/CSS assets for 10 minutes
+(`Cache-Control: max-age=600`), and a browser that already loaded a page
+this session may keep using its own cached copy of `.js`/`.css` files even
+across full page reloads, independent of that 10-minute window. So right
+after pushing a change, a browser tab that visited the site earlier in the
+same session can show stale behaviour. A hard refresh (Ctrl+F5) or a wait
+of a few minutes resolves it — don't mistake this for a broken deploy.
+
 ## How it's built
 
 One shared **engine** renders every VOC from a small **data file** — a new

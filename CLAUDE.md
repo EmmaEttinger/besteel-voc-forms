@@ -100,16 +100,33 @@ Stationery Order got its own files: so it can never regress the VOC quiz
 engine and vice versa. One engine, many data files, loaded via
 `prestart-checklist.html?form=<id>` — same pattern as `voc.html`. Full
 details are in SETUP-GUIDE.md section **"3c. Pre-Start Checklists."**
-Status: **Truck / Semi-Trailer live and working end-to-end** as of
-2026-09-02 — hosted on GitHub Pages (see "Hosting" above), SharePoint list
-+ Power Automate flow built and confirmed via test submissions (including
-the `AnyFail` Yes/No column, which needed an explicit
-`equals(triggerBody()?['anyFail'], true)` expression rather than plain
-dynamic content — plain mapping left it blank). Still need the SharePoint
-button/card wired up to the live URL (Emma is doing this directly), and
-the other 4 equipment checklists (Forklift, Gantry Crane, Vehicle Loading
-Crane, general Equipment) as new `data/prestart-*.js` files from the PDFs
-already supplied.
+Status: **all 5 checklists built** (Truck/Semi-Trailer, Forklift, Gantry
+Crane, Vehicle Loading Crane, Equipment) as of 2026-09-02, hosted on GitHub
+Pages (see "Hosting" above). Truck/Semi-Trailer is **live and working
+end-to-end**: SharePoint list + Power Automate flow built and confirmed
+via test submissions (including the `AnyFail` Yes/No column, which needed
+an explicit `equals(triggerBody()?['anyFail'], true)` expression rather
+than plain dynamic content — plain mapping left it blank). The other 4
+submit to the same flow/list and should work the same way, but haven't
+each been individually test-submitted yet. Still need the SharePoint
+button/card wired up (Emma is doing this directly).
+
+The Equipment checklist (`data/prestart-equipment.js`) is a different
+shape from the other 4 — sourced from a differently-structured PDF
+("Equipment Pre-Start Inspection Checklist.pdf") that covers several
+equipment types with Okay/Needs Attention/N-A responses and a simple
+notes+photo close instead of the full defect workflow. Rather than
+special-case it, `prestart-engine.js` gained optional config support for
+this: `resultLabels` (relabel the per-item buttons — internal
+Pass/Fail/N-A values are unchanged, so scoring/fail-styling/print all
+keep working), `equipmentOptions` (swap the free-text Equipment/Asset
+field for a dropdown), `siteFieldLabel` / `personCompletingLabel`
+(relabel those fields), and `finalVerification: { type: "notes" }` (swap
+the Defects Identified/Safe to Operate/Corrective Action Required
+workflow for Notes + Photos). See `data/_prestart-template.js` for how to
+use these on a future checklist. Notes-type submissions reuse the
+existing `correctiveActionDetails` payload field for the note text, so no
+Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
@@ -122,10 +139,10 @@ already supplied.
   of posting anywhere.
 - Stationery Order tool: complete and live — see above, no outstanding work
   unless the catalogue needs new items or reporting gets requested later.
-- Pre-Start Checklists: Truck/Semi-Trailer live and working end-to-end —
-  see above. Still need: the SharePoint button/card actually pointed at the
-  live URL, and the other 4 equipment checklists as new
-  `data/prestart-*.js` files.
+- Pre-Start Checklists: all 5 built — see above. Truck/Semi-Trailer
+  confirmed live end-to-end; the other 4 share the same flow/list but
+  haven't each been individually test-submitted. Still need: the
+  SharePoint button/card actually pointed at the live URL.
 - No test suite / build tooling — this is intentionally plain static files.
   Verify changes by opening `index.html` directly in a browser (or serving
   the folder over any static HTTP server) and clicking through a VOC.

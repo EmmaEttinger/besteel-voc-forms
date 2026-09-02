@@ -38,6 +38,15 @@ window.PrestartEngine = (function () {
     const root = document.getElementById("ps-root");
     root.innerHTML = "";
 
+    // Internal item values are always "Pass" / "Fail" / "N/A" (scoring,
+    // fail-styling and print all key off these) — resultLabels only swaps
+    // what's shown on the buttons, e.g. Okay / Needs Attention / Not
+    // Applicable for the Equipment checklist.
+    const resultLabels = data.resultLabels || { Pass: "Pass", Fail: "Fail", "N/A": "N/A" };
+    const isNotesFinal = data.finalVerification && data.finalVerification.type === "notes";
+    const siteFieldLabel = data.siteFieldLabel || "Site conducted";
+    const personCompletingLabel = data.personCompletingLabel || "Person Completing Pre Start Inspection";
+
     const state = {
       site: "",
       conductedOn: nowLocalDatetime(),
@@ -108,6 +117,25 @@ window.PrestartEngine = (function () {
         validate();
       });
 
+      const equipmentField = (data.equipmentOptions || []).length
+        ? el(
+            "div",
+            { class: "ps-field" },
+            el("label", { for: "ps-equipment", text: "Equipment" }),
+            el(
+              "select",
+              { id: "ps-equipment" },
+              el("option", { value: "", text: "Select equipment…" }),
+              ...data.equipmentOptions.map((e) => el("option", { value: e, text: e }))
+            )
+          )
+        : el(
+            "div",
+            { class: "ps-field" },
+            el("label", { text: "Equipment / Asset" }),
+            el("input", { type: "text", id: "ps-equipment", placeholder: "e.g. rego or fleet number (optional)" })
+          );
+
       return el(
         "div",
         { class: "ps-card" },
@@ -118,7 +146,7 @@ window.PrestartEngine = (function () {
           el(
             "div",
             { class: "ps-field" },
-            el("label", { for: "ps-site", text: "Site conducted" }),
+            el("label", { for: "ps-site", text: siteFieldLabel }),
             siteSelect
           ),
           el(
@@ -134,12 +162,7 @@ window.PrestartEngine = (function () {
           el("label", { for: "ps-prepared", text: "Prepared by" }),
           preparedInput
         ),
-        el(
-          "div",
-          { class: "ps-field" },
-          el("label", { text: "Equipment / Asset" }),
-          el("input", { type: "text", id: "ps-equipment", placeholder: "e.g. rego or fleet number (optional)" })
-        )
+        equipmentField
       );
     }
 
@@ -156,12 +179,12 @@ window.PrestartEngine = (function () {
       );
 
       ["Pass", "Fail", "N/A"].forEach((val) => {
-        const btn = el("button", { type: "button", "data-val": val, text: val });
+        const btn = el("button", { type: "button", "data-val": val, text: resultLabels[val] || val });
         btn.addEventListener("click", () => {
           state.items[key] = val;
           seg.querySelectorAll("button").forEach((b) => b.classList.remove("ps-active"));
           btn.classList.add("ps-active");
-          seg.setAttribute("data-print-value", val);
+          seg.setAttribute("data-print-value", resultLabels[val] || val);
           row.classList.add("ps-answered");
           row.classList.toggle("ps-fail", val === "Fail");
           row.classList.toggle("ps-pass", val === "Pass");
@@ -213,7 +236,83 @@ window.PrestartEngine = (function () {
       return rowEl;
     }
 
+    function buildNotesFinalCard() {
+      const notesInput = el("textarea", {
+        id: "ps-notes",
+        placeholder: "Describe any defect and, if useful, mention any photo attached below"
+      });
+      notesInput.addEventListener("input", () => {
+        state.correctiveActionDetails = notesInput.value;
+      });
+
+      const photoInput = el("input", { type: "file", id: "ps-photo", accept: "image/*" });
+      const photoPreviewWrap = el("div", { class: "ps-photo-preview hidden" });
+      photoInput.addEventListener("change", () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.photoDataUrl = reader.result;
+          state.photoName = file.name;
+          renderPhotoPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function renderPhotoPreview() {
+        photoPreviewWrap.innerHTML = "";
+        if (!state.photoDataUrl) {
+          photoPreviewWrap.classList.add("hidden");
+          return;
+        }
+        photoPreviewWrap.classList.remove("hidden");
+        const img = el("img", { src: state.photoDataUrl, alt: "Defect photo" });
+        const removeBtn = el("button", { type: "button", class: "ps-photo-remove", text: "Remove photo" });
+        removeBtn.addEventListener("click", () => {
+          state.photoDataUrl = null;
+          state.photoName = null;
+          photoInput.value = "";
+          renderPhotoPreview();
+        });
+        photoPreviewWrap.appendChild(img);
+        photoPreviewWrap.appendChild(removeBtn);
+      }
+
+      const personInput = el("input", { type: "text", id: "ps-person-completing", required: "required" });
+      personInput.addEventListener("input", () => {
+        state.personCompleting = personInput.value;
+        validate();
+      });
+
+      return el(
+        "div",
+        { class: "ps-card" },
+        el("h2", { text: "Notes / Defect Identified" }),
+        el(
+          "div",
+          { class: "ps-field" },
+          el("label", { for: "ps-notes", text: "Provide information (include photos if necessary)" }),
+          notesInput
+        ),
+        el(
+          "div",
+          { class: "ps-field" },
+          el("label", { for: "ps-photo", text: "Photos" }),
+          photoInput,
+          photoPreviewWrap
+        ),
+        el(
+          "div",
+          { class: "ps-field" },
+          el("label", { for: "ps-person-completing", text: personCompletingLabel }),
+          personInput
+        )
+      );
+    }
+
     function buildFinalCard() {
+      if (isNotesFinal) return buildNotesFinalCard();
+
       const defectsField = el(
         "div",
         { class: "ps-field" },
@@ -333,7 +432,7 @@ window.PrestartEngine = (function () {
       const personField = el(
         "div",
         { class: "ps-field" },
-        el("label", { for: "ps-person-completing", text: "Person Completing Pre Start Inspection" }),
+        el("label", { for: "ps-person-completing", text: personCompletingLabel }),
         personInput
       );
 
@@ -352,17 +451,18 @@ window.PrestartEngine = (function () {
 
     function validate() {
       const allItemsAnswered = answeredItems() === totalItems();
-      const ok = Boolean(
-        state.site &&
-          state.conductedOn &&
-          state.preparedBy.trim() &&
-          allItemsAnswered &&
-          state.defectsIdentified &&
-          state.safeToOperate &&
-          state.correctiveActionRequired &&
-          (state.correctiveActionRequired !== "Yes" || state.correctiveActionDetails.trim()) &&
-          state.personCompleting.trim()
+      const baseOk = Boolean(
+        state.site && state.conductedOn && state.preparedBy.trim() && allItemsAnswered && state.personCompleting.trim()
       );
+      const ok = isNotesFinal
+        ? baseOk
+        : baseOk &&
+          Boolean(
+            state.defectsIdentified &&
+              state.safeToOperate &&
+              state.correctiveActionRequired &&
+              (state.correctiveActionRequired !== "Yes" || state.correctiveActionDetails.trim())
+          );
       if (submitBtn) submitBtn.disabled = !ok || state.submitted;
       return ok;
     }
@@ -466,7 +566,9 @@ window.PrestartEngine = (function () {
 
       fatalBanner = el("div", {
         class: "ps-banner hidden",
-        text: "One or more items failed — make sure Defects Identified, Is the Equipment safe to operate?, and Corrective Action Required are completed below."
+        text: isNotesFinal
+          ? "One or more items need attention — describe the details in Notes / Defect Identified below."
+          : "One or more items failed — make sure Defects Identified, Is the Equipment safe to operate?, and Corrective Action Required are completed below."
       });
       successBanner = el("div", {
         class: "ps-banner ps-success hidden",

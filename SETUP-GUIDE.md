@@ -287,22 +287,33 @@ data file is just section headings with a list of item labels; every item
 gets a Pass/Fail/N-A control (that's the one interaction this tool
 supports — a different kind of question belongs in a VOC instead).
 
-**Where this will be hosted.** Like Stationery Order, SharePoint document
-libraries can't execute `.html`/JS files directly, so this almost certainly
-needs the same GitHub Pages arrangement (see section 3b above) rather than
-living as a file *inside* SharePoint — a SharePoint page/button then links
-out to the GitHub Pages URL. Send me the URL of the button/card you want it
-linked from on SharePoint once you're ready, and I'll confirm the hosting
-approach and get the live URL wired up to it.
+**Where this is hosted — confirmed, live.** Unlike Stationery Order's
+separate manually-synced repo, this whole "VOC HTML" folder (VOC engine +
+Stationery Order + Pre-Start Checklists together) is pushed straight to
+**github.com/EmmaEttinger/besteel-voc-forms** with GitHub Pages turned on.
+Live URL for this checklist:
+`https://emmaettinger.github.io/besteel-voc-forms/prestart-checklist.html?form=truck-semi-trailer`
+— that's the URL to put on the SharePoint button/card. There's only one
+copy of every file to edit (this folder) — commit and `git push origin
+master:main` here and the live site updates, no second repo to keep in
+sync. See "Hosting" in CLAUDE.md for the short version.
 
-**Getting responses into a SharePoint list.** Same Power Automate pattern
-as the VOC engine (section 3 above) — the form POSTs JSON to a flow, the
-flow writes to a list — but needs its **own** flow and its **own** list
-(don't reuse the VOC or Stationery ones, the shape of the data is
-different). Once built, paste the HTTP POST URL into
-`PRESTART_CONFIG.submitUrl` in `assets/js/config.js` (and, once this is
-hosted on GitHub Pages, into the live copy there too — same two-places
-gotcha as Stationery Order in section 3b).
+**Getting responses into a SharePoint list — done and verified.** Same
+Power Automate pattern as the VOC engine (section 3 above) — the form
+POSTs JSON to a flow, the flow writes to a list — with its own flow and
+its own list (**Pre-Start Checklists**, separate from the VOC and
+Stationery ones since the data shape is different). `PRESTART_CONFIG.submitUrl`
+in `assets/js/config.js` is set and confirmed working via test
+submissions (both a normal all-Pass one and a Fail one, to check
+`AnyFail` in both states).
+
+**Gotcha hit and fixed:** mapping the `AnyFail` field into a SharePoint
+Yes/No column using plain dynamic content left it blank — Power Automate
+doesn't reliably coerce a JSON boolean into a Yes/No column that way. Fix:
+in the SharePoint "Create item" step, set the AnyFail field via
+**Expression** instead of dynamic content:
+`equals(triggerBody()?['anyFail'], true)`. Worth remembering if you ever
+add another true/false field to this flow (or the VOC/Stationery ones).
 
 Suggested SharePoint list columns:
 

@@ -7,6 +7,19 @@ quizzing. Static HTML/CSS/JS — no build step, no framework, no dependencies.
 Full setup/operations doc: [SETUP-GUIDE.md](SETUP-GUIDE.md). Read that first
 for hosting, SharePoint/Power Automate wiring, and the branding rationale.
 
+## Hosting
+
+This whole repo (VOC engine + Stationery Order + Pre-Start Checklists, all
+of it) is pushed to **github.com/EmmaEttinger/besteel-voc-forms** (public
+repo, branch `main`) with **GitHub Pages** turned on, serving from
+`main` / root. Live site: `https://emmaettinger.github.io/besteel-voc-forms/`
+— every file in this folder is reachable there under the same relative path
+once pushed. Local `master` branch maps to GitHub's `main`; push with
+`git push origin master:main`. Unlike Stationery Order's original setup
+(a second, manually-synced repo — see SETUP-GUIDE.md section 3b), this is
+the single copy: edit here, commit, push, and the live site updates —
+no second repo to keep in sync.
+
 ## How it's built
 
 One shared **engine** renders every VOC from a small **data file** — a new
@@ -87,10 +100,16 @@ Stationery Order got its own files: so it can never regress the VOC quiz
 engine and vice versa. One engine, many data files, loaded via
 `prestart-checklist.html?form=<id>` — same pattern as `voc.html`. Full
 details are in SETUP-GUIDE.md section **"3c. Pre-Start Checklists."**
-Status: **Truck / Semi-Trailer built and working** (2026-09-02); SharePoint
-submission not yet wired up (`PRESTART_CONFIG.submitUrl` is blank — see
-below); Forklift, Gantry Crane, Vehicle Loading Crane, and general Equipment
-checklists still to build from the PDFs already supplied.
+Status: **Truck / Semi-Trailer live and working end-to-end** as of
+2026-09-02 — hosted on GitHub Pages (see "Hosting" above), SharePoint list
++ Power Automate flow built and confirmed via test submissions (including
+the `AnyFail` Yes/No column, which needed an explicit
+`equals(triggerBody()?['anyFail'], true)` expression rather than plain
+dynamic content — plain mapping left it blank). Still need the SharePoint
+button/card wired up to the live URL (Emma is doing this directly), and
+the other 4 equipment checklists (Forklift, Gantry Crane, Vehicle Loading
+Crane, general Equipment) as new `data/prestart-*.js` files from the PDFs
+already supplied.
 
 ## Status / what's outstanding
 
@@ -103,10 +122,9 @@ checklists still to build from the PDFs already supplied.
   of posting anywhere.
 - Stationery Order tool: complete and live — see above, no outstanding work
   unless the catalogue needs new items or reporting gets requested later.
-- Pre-Start Checklists: Truck/Semi-Trailer built (see above). Still need:
-  `PRESTART_CONFIG.submitUrl` (new Power Automate flow + new SharePoint
-  list, not the VOC or stationery ones), the SharePoint page/button URL to
-  link out to once hosted, and the other 4 equipment checklists as new
+- Pre-Start Checklists: Truck/Semi-Trailer live and working end-to-end —
+  see above. Still need: the SharePoint button/card actually pointed at the
+  live URL, and the other 4 equipment checklists as new
   `data/prestart-*.js` files.
 - No test suite / build tooling — this is intentionally plain static files.
   Verify changes by opening `index.html` directly in a browser (or serving

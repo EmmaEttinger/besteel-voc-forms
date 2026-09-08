@@ -3,10 +3,14 @@
 Interactive Verification of Competency (VOC) forms for Besteel employees,
 replacing a Microsoft Forms setup that couldn't do retry-until-correct
 quizzing. Static HTML/CSS/JS — no build step, no framework, and no
-dependencies except one deliberate exception: the Pre-Start Checklists
-tool loads **jsPDF + jspdf-autotable from cdnjs** (see
-`prestart-checklist.html`) to generate a real PDF client-side for every
-submission. Nothing else in the repo needs a build step or a library.
+dependencies except one deliberate exception: both the VOC engine
+(`voc.html`) and the Pre-Start Checklists tool (`prestart-checklist.html`)
+load **jsPDF + jspdf-autotable from cdnjs** to generate a real PDF
+client-side for every submission, auto-attached to the SharePoint item —
+an audit-ready signed/dated record instead of raw JSON in a column. Same
+library, same versions, loaded independently in each tool's own HTML file
+(no shared script) since each tool keeps its own files. Nothing else in
+the repo needs a build step or a library.
 
 Full setup/operations doc: [SETUP-GUIDE.md](SETUP-GUIDE.md). Read that first
 for hosting, SharePoint/Power Automate wiring, and the branding rationale.
@@ -64,9 +68,14 @@ BeSteel_Guidelines2024_R2-08.pdf   source of the colour palette / typography
   every question is answered correctly (and, if the practical gate is
   answered "Yes", supervisor name + all ratings + overall outcome +
   signature are present too).
-- On submit: POSTs JSON to `VOC_CONFIG.submitUrl` (a Power Automate flow that
-  writes to a SharePoint list — see SETUP-GUIDE.md). If that URL is blank or
-  the request fails, it downloads the response as `.json` instead of losing
+- On submit: builds a real PDF client-side (jsPDF — see the dependency note
+  above) of the completed VOC (person's details, every question with the
+  answer given, the practical table and outcome if applicable, signature),
+  attaches it as `pdfDataUrl`/`pdfFileName` on the payload, then POSTs the
+  whole thing to `VOC_CONFIG.submitUrl` (a Power Automate flow that writes
+  to a SharePoint list and attaches the PDF to the item — see SETUP-GUIDE.md
+  section 3). If that URL is blank or the request fails, it downloads the
+  response as `.json` (PDF included, base64-embedded) instead of losing
   data — never let a submit path silently discard an employee's answers.
 
 ## Adding a new VOC
@@ -155,6 +164,15 @@ Power Automate/SharePoint changes were needed to capture it.
   duplicate of `STATIONERY_CONFIG`'s URL — if old VOC test submissions are
   missing, that's why; anything submitted from now on goes to the right
   place.
+- VOC PDF generation: **built**, same pattern as Pre-Start's (see the
+  dependency note and "Key behaviour" above). Verified locally (correct
+  layout, correct colours on Competent/Not Competent, correct field
+  spacing, signature embeds correctly — the one real bug found in testing,
+  long personal-field labels overlapping their values, is fixed). Not yet
+  attached to the SharePoint item, though — that needs the same Condition +
+  "Add attachment" steps added to Emma's VOC flow that Pre-Start's flow has
+  (see SETUP-GUIDE.md section 3); the payload field already exists, the
+  flow just doesn't do anything with it yet.
 - Stationery Order tool: complete and live — see above, no outstanding work
   unless the catalogue needs new items or reporting gets requested later.
 - Pre-Start Checklists: all 5 built — see above. Truck/Semi-Trailer

@@ -497,6 +497,240 @@
       };
     },
 
+    // Builds a real, text-searchable PDF client-side (no server round
+    // trip) so a copy can be auto-attached to the SharePoint item on
+    // every submission — a signed, dated, question-and-answer record an
+    // auditor can be handed directly, rather than raw JSON in a column.
+    // Returns a data: URI string, or null if generation fails for any
+    // reason (missing jsPDF, unsupported browser, bad image data) —
+    // callers must treat that as "no PDF this time," never block submit.
+    async _buildPdfDataUrl(payload) {
+      if (!window.jspdf || !window.jspdf.jsPDF) return null;
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+        const marginX = 40;
+        const pageBottom = 780;
+        const cfg = window.VOC_CONFIG || {};
+        const d = this.data;
+        let y = 50;
+
+        if (cfg.logoUrl) {
+          try {
+            const logoDataUrl = await this._loadScaledImageDataUrl(cfg.logoUrl, 120, "image/png");
+            if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", marginX, y - 24, 26, 26);
+          } catch (e) {
+            /* logo is a nice-to-have, never block the PDF over it */
+          }
+        }
+
+        doc.setFontSize(15);
+        doc.setTextColor(56, 68, 85);
+        doc.text(payload.formTitle || d.title || "Verification of Competency", marginX + 34, y);
+        y += 16;
+        doc.setFontSize(9);
+        doc.setTextColor(120, 128, 138);
+        doc.text(cfg.companyName || "Besteel Frames", marginX + 34, y);
+        y += 26;
+
+        // Person's details
+        const details = (d.personalFields || [])
+          .map((f) => [f.label, payload.personal[f.id]])
+          .filter(([, v]) => v);
+
+        doc.setFontSize(10);
+        details.forEach(([label, value]) => {
+          doc.setTextColor(56, 68, 85);
+          doc.setFont(undefined, "bold");
+          const labelText = label + ":";
+          doc.text(labelText, marginX, y);
+          // Most labels are short ("Site conducted:") and line up neatly at a
+          // fixed column, but VOCs can define longer ones ("Please enter your
+          // Site as reference:") — measure and push the value right instead
+          // of overlapping it when a label runs past the usual column.
+          const valueX = marginX + Math.max(170, doc.getTextWidth(labelText) + 8);
+          doc.setTextColor(35, 43, 53);
+          doc.setFont(undefined, "normal");
+          doc.text(String(value), valueX, y);
+          y += 15;
+        });
+        y += 6;
+
+        // Pre-questions (e.g. "have you read the SOP")
+        (d.preQuestions || []).forEach((pq) => {
+          const ans = payload.preAnswers[pq.id];
+          if (!ans) return;
+          const lines = doc.splitTextToSize(pq.question, 480);
+          if (y + lines.length * 12 + 16 > pageBottom) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(9);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(56, 68, 85);
+          doc.text(lines, marginX, y);
+          y += lines.length * 12 + 2;
+          doc.setFont(undefined, "normal");
+          doc.setTextColor(35, 43, 53);
+          doc.text("Answer: " + ans, marginX, y);
+          y += 16;
+        });
+        y += 4;
+
+        // Questions
+        if (payload.questions && payload.questions.length) {
+          if (y > pageBottom - 60) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(161, 139, 103);
+          doc.text("Questions", marginX, y);
+          y += 8;
+
+          doc.autoTable({
+            startY: y,
+            margin: { left: marginX, right: marginX },
+            head: [["#", "Question", "Answer given"]],
+            body: payload.questions.map((q, i) => [String(i + 1), q.question, q.answer]),
+            styles: { fontSize: 9, cellPadding: 4, valign: "top" },
+            headStyles: { fillColor: [56, 68, 85], textColor: 255 },
+            columnStyles: { 0: { cellWidth: 20 }, 2: { cellWidth: 140 } }
+          });
+          y = doc.lastAutoTable.finalY + 18;
+        }
+
+        // Practical section — only meaningful once the gate was answered "Yes"
+        if (payload.practicalRequired === "Yes" && payload.practicalItems && payload.practicalItems.length) {
+          if (y > pageBottom - 80) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(161, 139, 103);
+          doc.text("Practical Verification", marginX, y);
+          y += 8;
+
+          doc.autoTable({
+            startY: y,
+            margin: { left: marginX, right: marginX },
+            head: [["Item", "Rating"]],
+            body: payload.practicalItems.map((it) => [it.title, it.rating || "—"]),
+            styles: { fontSize: 9, cellPadding: 4 },
+            headStyles: { fillColor: [56, 68, 85], textColor: 255 },
+            didParseCell: (cellData) => {
+              if (cellData.section !== "body" || cellData.column.index !== 1) return;
+              const raw = payload.practicalItems[cellData.row.index].rating;
+              if (raw === "Not Competent") {
+                cellData.cell.styles.textColor = [197, 34, 31];
+                cellData.cell.styles.fontStyle = "bold";
+              } else if (raw === "Competent") {
+                cellData.cell.styles.textColor = [30, 142, 62];
+              }
+            }
+          });
+          y = doc.lastAutoTable.finalY + 18;
+
+          if (y > pageBottom - 60) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(56, 68, 85);
+          doc.text("Supervisor:", marginX, y);
+          doc.setFont(undefined, "normal");
+          doc.setTextColor(35, 43, 53);
+          doc.text(String(payload.supervisorName || ""), marginX + 90, y);
+          y += 16;
+
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(56, 68, 85);
+          doc.text("Overall Outcome:", marginX, y);
+          doc.setFont(undefined, "bold");
+          if (payload.overallOutcome === "Not Competent") doc.setTextColor(197, 34, 31);
+          else doc.setTextColor(30, 142, 62);
+          doc.text(String(payload.overallOutcome || ""), marginX + 110, y);
+          y += 22;
+        }
+
+        // Signature — the pad only ever exists as part of the practical
+        // section's "Sign to Submit" step, so gate on practicalRequired
+        // too, not just signatureDataUrl being set. Otherwise a stale
+        // signature from an earlier "Yes" answer could still print here
+        // after someone switches the gate back to "No"/"N/A".
+        if (payload.practicalRequired === "Yes" && payload.signatureDataUrl) {
+          if (y > pageBottom - 120) {
+            doc.addPage();
+            y = 50;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, "bold");
+          doc.setTextColor(56, 68, 85);
+          doc.text("Signature:", marginX, y);
+          y += 8;
+          try {
+            const scaledSig = await this._loadScaledImageDataUrl(payload.signatureDataUrl, 400, "image/png");
+            if (scaledSig) doc.addImage(scaledSig, "PNG", marginX, y, 180, 70);
+          } catch (e) {
+            /* unsupported image encoding — skip embedding, PDF still valid */
+          }
+          doc.setFont(undefined, "normal");
+          doc.setTextColor(35, 43, 53);
+          doc.text("Date: " + (payload.signatureDate || ""), marginX + 200, y + 40);
+          y += 90;
+        }
+
+        if (y > pageBottom - 20) {
+          doc.addPage();
+          y = 50;
+        }
+        doc.setFontSize(8);
+        doc.setTextColor(120, 128, 138);
+        doc.text("Submitted: " + new Date(payload.submittedAt).toLocaleString(), marginX, y);
+
+        return doc.output("datauristring");
+      } catch (e) {
+        return null;
+      }
+    },
+
+    // Downscales an image (from a URL or an existing data: URL) via an
+    // offscreen canvas before jsPDF ever sees it — the brand logo here is
+    // 4501x4501px despite showing at 44px on screen, and jsPDF embeds
+    // pixel data close to 1:1 rather than re-compressing, so skipping
+    // this step produces a wildly oversized "PDF" from a small source
+    // image (hit this exact issue building the Pre-Start Checklist PDF).
+    // Resolves to null (never rejects) so a bad/unreachable image just
+    // means no image in the PDF, not a broken submit.
+    _loadScaledImageDataUrl(src, maxDim, mime) {
+      return new Promise((resolve) => {
+        if (!src) {
+          resolve(null);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+            const w = Math.max(1, Math.round(img.naturalWidth * scale));
+            const h = Math.max(1, Math.round(img.naturalHeight * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL(mime, 0.85));
+          } catch (e) {
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    },
+
     async _submit() {
       if (!this._checkValidity()) return;
       const btn = document.getElementById("voc-submit-btn");
@@ -506,6 +740,9 @@
       errMsg.classList.add("voc-hidden");
 
       const payload = this._collectPayload();
+      payload.pdfDataUrl = await this._buildPdfDataUrl(payload);
+      payload.pdfFileName = (this.data.meta && this.data.meta.formId ? this.data.meta.formId : "voc") + "-" + payload.submittedAt.slice(0, 10) + ".pdf";
+
       const cfg = window.VOC_CONFIG || {};
 
       try {

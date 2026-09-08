@@ -97,9 +97,44 @@ answer as its own row into a separate "VOC Answers" list (Compose a "Select"
 action over the `questions` array). Ask me for this if/when you want it — it's
 a small addition.
 
-**Signatures:** `signatureDataUrl` is a base64 PNG. Either store it in a
-"Multiple lines of text" column as-is, or (nicer) add a Power Automate step
-that decodes it and adds it as an attachment to the SharePoint item.
+**Signatures:** `signatureDataUrl` is a base64 PNG. You don't need to do
+anything with it directly — it's already embedded in the auto-generated PDF
+described below, which is the better place for an auditor to see it anyway
+(next to the questions it belongs to, not floating in its own column). Only
+store it separately if you specifically want the raw signature image
+outside the PDF too.
+
+**Keeping an audit-ready copy — the PDF.** Every submission also builds a
+real PDF client-side (via jsPDF, loaded from cdnjs — see the `<script>` tags
+in `voc.html`) with the person's details, every question and the answer
+given, the practical section table and overall outcome (if applicable), and
+the signature — laid out as a single signed, dated record. It's sent as
+`pdfDataUrl` (a base64 data URI) + `pdfFileName` alongside the rest of the
+JSON payload. **This needs one addition to the Power Automate flow** to
+actually land as a SharePoint attachment — the payload field exists
+already, but nothing writes it anywhere until you add this step (identical
+to the one already built for Pre-Start Checklists — see section 3c below
+for the same recipe in that context):
+
+- **+ New step → Condition**: `pdfDataUrl` (from trigger dynamic content)
+  **is not equal to** *(leave the value blank)* — skips cleanly on the rare
+  submission where PDF generation failed client-side (missing image,
+  unsupported browser, etc.) rather than erroring the whole flow.
+- Inside the **Yes** branch, **+ New step → SharePoint → Add attachment**:
+  - Site Address / List Name: same as the "Create item" step above.
+  - Id: the **ID** from the "Create item" step's output (dynamic content)
+    — this is why Add attachment must come *after* Create item, not before.
+  - File Name: `pdfFileName` (dynamic content).
+  - File Content: switch to **Expression** and enter
+    `base64ToBinary(substring(triggerBody()?['pdfDataUrl'], add(indexOf(triggerBody()?['pdfDataUrl'], ','), 1)))`
+    — `pdfDataUrl` arrives as `data:application/pdf;filename=generated.pdf;base64,<data>`,
+    so this strips everything up to and including the comma before decoding.
+- No new SharePoint column needed — attachments are a built-in list item
+  feature, already on by default.
+
+Same image-downscaling approach as Pre-Start's PDF (see section 3c) is
+already built in for the logo, so there's no equivalent "100MB PDF" gotcha
+to worry about here.
 
 ## 3b. Stationery Order — SharePoint list + emailed order
 

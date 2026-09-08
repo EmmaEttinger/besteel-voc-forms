@@ -9,7 +9,7 @@ window.VOC_CONFIG = {
   // "When an HTTP request is received" trigger here once you've built it.
   // Leave blank while testing locally — the form will fall back to
   // downloading a JSON file instead of submitting, so no data is lost.
-  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/21/workflows/0f8f24a9e01d45a88b1f39ba0b8be87f/triggers/manual/paths/invoke?api-version=1",
+  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/19/workflows/c94f91bf84eb4d978a338a2c2b8372f1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6qHBjb1DmrsVRTF_Fauw-hVCA8zl-jeeyyP2OoHr6bM",
 
   // Optional: shown in the header of every VOC form.
   companyName: "Besteel Frames",

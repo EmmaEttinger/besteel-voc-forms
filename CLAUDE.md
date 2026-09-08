@@ -145,10 +145,16 @@ Power Automate/SharePoint changes were needed to capture it.
 - Angle Grinder VOC: content + branding done, reviewed by the user.
 - Storage & Handling of Steel in Warehouse Racking VOC: done.
 - ~19 more VOCs still to add — same pattern, just new data files.
-- SharePoint submission: `assets/js/config.js` → `VOC_CONFIG.submitUrl` is
-  still blank. Needs the Power Automate flow described in SETUP-GUIDE.md
-  before this goes live; until then, submissions download as JSON instead
-  of posting anywhere.
+- SharePoint submission: **wired up and live** as of 2026-09-08.
+  `VOC_CONFIG.submitUrl` in `assets/js/config.js` points at Emma's own
+  Power Automate flow (its own flow/list, separate from Stationery Order
+  and Pre-Start Checklists); confirmed via a test submission (Angle
+  Grinder, success screen shown, not the JSON-download fallback) — worth
+  double-checking the test row landed in the SharePoint list and deleting
+  it. Note: this URL replaced a placeholder that had accidentally been a
+  duplicate of `STATIONERY_CONFIG`'s URL — if old VOC test submissions are
+  missing, that's why; anything submitted from now on goes to the right
+  place.
 - Stationery Order tool: complete and live — see above, no outstanding work
   unless the catalogue needs new items or reporting gets requested later.
 - Pre-Start Checklists: all 5 built — see above. Truck/Semi-Trailer

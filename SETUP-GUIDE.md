@@ -65,6 +65,30 @@ writes it into a SharePoint list. Setup is one-time, about 10 minutes:
 | QuestionAnswersJSON | Multiple lines of text | `JSON.stringify(questions)` (add a Compose action) |
 | PracticalItemsJSON | Multiple lines of text | `JSON.stringify(practicalItems)` (add a Compose action) |
 
+**Gotcha hit and fixed:** the `personal.*` source fields above (EmployeeName,
+ConductedOn, Site, Location) are nested inside a `personal` object in the
+payload, not top-level fields — unlike Stationery Order/Pre-Start, whose
+person-detail fields are flat. Power Automate's dynamic-content picker
+doesn't reliably drill into that nesting, so mapping these "the easy way"
+can silently wire the column to the *whole* `personal` object — Power
+Automate then stringifies it, and the column ends up showing something like
+`{"preparedBy":"Darth Vader","conductedOn":"2026-09-08T13:26","siteConducted":"Yandina",...}`
+instead of just the name. Fix: map each of these fields via **Expression**,
+not dynamic content:
+
+| Column | Expression |
+|---|---|
+| EmployeeName | `triggerBody()?['personal']?['preparedBy']` |
+| ConductedOn | `triggerBody()?['personal']?['conductedOn']` |
+| Site | `triggerBody()?['personal']?['siteConducted']` |
+| Location | `triggerBody()?['personal']?['location']` |
+
+(Same pattern for `siteReference` if you add a column for it.) Worth
+checking all four columns if you hit this on any one of them — they're all
+equally exposed to the same nested-object issue. Any row already saved with
+the raw-JSON value needs a manual edit (or delete) in the list itself;
+there's no way to bulk-fix existing rows from the flow.
+
 Keeping the per-question detail as JSON in one column is the pragmatic choice
 for 10+ questions across 20+ different VOCs with different questions — trying
 to give every question its own column doesn't scale. If you want to report on

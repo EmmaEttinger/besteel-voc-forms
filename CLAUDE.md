@@ -106,7 +106,11 @@ parse into the exact same data shape, so don't ask the user to pick one —
 just handle whichever they send, and expect more formatting variations to
 keep showing up. Turn it directly
 into a new `data/<slug>.js` file following the shape in `data/_template.js`
-/ `data/angle-grinder.js`, then add a link to it in `index.html`. Before
+/ `data/angle-grinder.js`, then add a link to it in `index.html` **in
+alphabetical order by the link's visible text** (case-insensitive; e.g.
+"Operation of Plasma Cutter" sorts under "O", not "P") — the list was
+reordered alphabetically once Emma asked for it, don't let it drift back
+to just-append-at-the-end. Before
 writing the file, verify every question has exactly one clearly marked
 correct answer — flag anything missing/ambiguous to the user rather than
 guessing, this is safety content. Don't touch `voc-engine.js` or the CSS

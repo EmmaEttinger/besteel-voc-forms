@@ -482,7 +482,13 @@
           answer: this.state.questions[q.id].selectedText,
           attempts: this.state.questions[q.id].attempts + 1
         })),
-        practicalRequired: this.state.practicalGate,
+        // These three are only ever set if a practical section actually
+        // rendered — for the many VOCs with no practical section they'd
+        // otherwise stay `null`, which Power Automate's trigger schema
+        // rejects outright (expects a string, not null/absent) and fails
+        // the whole submission. Empty string reads the same as "not
+        // applicable" everywhere downstream (SharePoint columns, the PDF).
+        practicalRequired: this.state.practicalGate || "",
         supervisorName: this.state.supervisorName,
         practicalItems: d.practical
           ? (d.practical.items || []).map((item) => ({
@@ -491,9 +497,9 @@
               rating: this.state.practicalRatings[item.id] || ""
             }))
           : [],
-        overallOutcome: this.state.overallOutcome,
+        overallOutcome: this.state.overallOutcome || "",
         signatureDate: this.state.signatureDate,
-        signatureDataUrl: this.state.signatureDataUrl
+        signatureDataUrl: this.state.signatureDataUrl || ""
       };
     },
 

@@ -77,6 +77,21 @@ BeSteel_Guidelines2024_R2-08.pdf   source of the colour palette / typography
   section 3). If that URL is blank or the request fails, it downloads the
   response as `.json` (PDF included, base64-embedded) instead of losing
   data — never let a submit path silently discard an employee's answers.
+- **`_collectPayload()` must never send `null` for `practicalRequired`,
+  `overallOutcome`, or `signatureDataUrl`** — coalesce to `""` (see the
+  `|| ""` in that function). The Power Automate trigger's schema expects
+  a string for these and hard-rejects `null` with
+  `TriggerInputSchemaMismatch` (HTTP 400), which every VOC *without* a
+  practical section hits by default since those three fields only get a
+  real value if the practical section actually rendered. Found when Emma
+  tested Plasma Cutter's submission and got the generic
+  "couldn't reach the submission service" error — the real cause wasn't
+  connectivity, it was this schema mismatch, and it affected every VOC
+  without a practical section (i.e. most of them) until fixed. If a
+  similar "unreachable" error shows up again, check the browser's network
+  tab / actually inspect the fetch response body first — the on-screen
+  message is generic and can mask a specific, fixable server-side reason
+  like this one.
 
 ## Adding a new VOC
 

@@ -179,14 +179,14 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 27 VOCs done: Abrasive Cut-Off Saw, Angle Grinder, Arc Welding, Bandsaw,
-  Bench Grinder, Compressed Gas, Guillotine, Hammer Drill, Overhead
-  Crane, Operation of Oxy Acetylene Set, Operation of Plasma Cutter,
-  Operation of a Truck with Hi-Ab, Steel Erection, MIG Welding, Drill
-  Press, Storage & Handling of Steel in Warehouse Racking, Blower, Brake
-  Press, Coil Change, Drop Saw, EWP Scissor Lift, Linisher, Loading and
-  Unloading Truck (Non-Site Specific), Operation of Power Tools,
-  Operation of Punch & Shear Machine, Truck Loading and Unloading
+- 28 VOCs done: Abrasive Cut-Off Saw, Angle Grinder, Arc Welding, Bandsaw,
+  Bench Grinder, Compressed Gas, Guillotine, Hammer Drill, Manual
+  Handling, Overhead Crane, Operation of Oxy Acetylene Set, Operation of
+  Plasma Cutter, Operation of a Truck with Hi-Ab, Steel Erection, MIG
+  Welding, Drill Press, Storage & Handling of Steel in Warehouse Racking,
+  Blower, Brake Press, Coil Change, Drop Saw, EWP Scissor Lift, Linisher,
+  Loading and Unloading Truck (Non-Site Specific), Operation of Power
+  Tools, Operation of Punch & Shear Machine, Truck Loading and Unloading
   (Yandina), Use of Air Compressor and Pneumatic Tools. Past the original
   ~21 estimate now — Emma keeps sending more, same pattern each time. 12
   of those were built from Word docs in `VOC Content for

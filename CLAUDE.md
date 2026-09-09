@@ -151,9 +151,33 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- Angle Grinder VOC: content + branding done, reviewed by the user.
-- Storage & Handling of Steel in Warehouse Racking VOC: done.
-- ~19 more VOCs still to add — same pattern, just new data files.
+- 12 VOCs done: Angle Grinder, Storage & Handling of Steel in Warehouse
+  Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP Scissor Lift,
+  Linisher, Operation of Power Tools, Operation of Punch & Shear Machine,
+  Truck Loading and Unloading (Yandina), Use of Air Compressor and
+  Pneumatic Tools. The last 10 were built from Word docs in
+  `VOC Content for Claude/` (2026-09-09) — extracted via a one-off
+  PowerShell docx→text script (no pandoc/python in this environment; see
+  scratchpad if that script is ever needed again) and cross-checked
+  programmatically (every question has exactly one "- Correct" marker,
+  every practical item's rating scale matches its source) before writing
+  any data file, specifically so a missing/ambiguous answer never gets
+  guessed into a safety quiz.
+- Held back, waiting on Emma: **Arc Welding** (source docx has a practical
+  section rated Compliant/Non-Compliant/N/A — three options — where every
+  other VOC's practical rating is a two-option Competent/Not Competent;
+  needs a decision on extending `voc-engine.js` for configurable rating
+  labels/option count vs. normalizing the wording) and **Loading and
+  Unloading Truck (Non-Site Specific)** (source docx question 8 has no
+  answer marked "- Correct" — needs Emma to supply which one is right).
+  Source docs for both are in `VOC Content for Claude/`.
+- The `VOC Content for Claude/` folder (outside this repo, a sibling
+  working directory) is where Emma drops source Word docs for new VOCs —
+  everything in it as of 2026-09-09 is now either built or in the held-back
+  list above. Same fastest-path as ever for anything added there later:
+  read it, cross-check every question has exactly one marked correct
+  answer before writing the data file, flag anything ambiguous instead of
+  guessing.
 - SharePoint submission: **wired up and live** as of 2026-09-08.
   `VOC_CONFIG.submitUrl` in `assets/js/config.js` points at Emma's own
   Power Automate flow (its own flow/list, separate from Stationery Order

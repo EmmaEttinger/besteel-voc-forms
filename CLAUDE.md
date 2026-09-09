@@ -151,34 +151,37 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 13 VOCs done: Angle Grinder, Storage & Handling of Steel in Warehouse
-  Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP Scissor Lift,
-  Linisher, Loading and Unloading Truck (Non-Site Specific), Operation of
-  Power Tools, Operation of Punch & Shear Machine, Truck Loading and
-  Unloading (Yandina), Use of Air Compressor and Pneumatic Tools. 11 of
-  those were built from Word docs in `VOC Content for Claude/`
-  (2026-09-09) — extracted via a one-off PowerShell docx→text script (no
-  pandoc/python in this environment; see scratchpad if that script is
-  ever needed again) and cross-checked programmatically (every question
-  has exactly one "- Correct" marker, every practical item's rating scale
-  matches its source) before writing any data file, specifically so a
-  missing/ambiguous answer never gets guessed into a safety quiz. That
-  check caught Loading and Unloading's question 8 having no marked
-  correct answer — held back, Emma fixed the source doc, rebuilt same day.
-- Held back, waiting on Emma: **Arc Welding** — its practical section
-  rates each item Compliant/Non-Compliant/N/A (three options), where
-  every other VOC's practical rating is two-option Competent/Not
-  Competent. Needs a decision on extending `voc-engine.js` for a
-  configurable rating scale (like Pre-Start's `resultLabels`) vs.
-  normalizing the wording to match everyone else. Source doc is in
-  `VOC Content for Claude/`.
+- 14 VOCs done: Angle Grinder, Arc Welding, Storage & Handling of Steel in
+  Warehouse Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP
+  Scissor Lift, Linisher, Loading and Unloading Truck (Non-Site Specific),
+  Operation of Power Tools, Operation of Punch & Shear Machine, Truck
+  Loading and Unloading (Yandina), Use of Air Compressor and Pneumatic
+  Tools. 12 of those were built from Word docs in `VOC Content for
+  Claude/` (2026-09-09) — extracted via a one-off PowerShell docx→text
+  script (no pandoc/python in this environment; see scratchpad if that
+  script is ever needed again) and cross-checked programmatically (every
+  question has exactly one "- Correct" marker, every practical item's
+  rating scale matches its source) before writing any data file,
+  specifically so a missing/ambiguous answer never gets guessed into a
+  safety quiz. That check caught two things, both since resolved with
+  Emma: Loading and Unloading's question 8 had no marked correct answer
+  (she fixed the source doc, rebuilt same day), and Arc Welding's source
+  doc rated practical items Compliant/Non-Compliant/N/A (three options)
+  where every other VOC uses two-option Competent/Not Competent — Emma
+  chose to normalize the wording rather than add engine support for a
+  per-VOC rating scale, so Arc Welding's practical section now uses the
+  same Competent/Not Competent buttons (with no N/A choice) as everyone
+  else. If a future VOC genuinely needs a 3-option or differently-labelled
+  practical rating, that's the point to actually build the configurable
+  version (à la Pre-Start's `resultLabels`) — don't silently normalize a
+  second time without asking, since this one only went one way because
+  Emma chose it.
 - The `VOC Content for Claude/` folder (outside this repo, a sibling
   working directory) is where Emma drops source Word docs for new VOCs —
-  everything in it as of 2026-09-09 is now either built or in the held-back
-  list above. Same fastest-path as ever for anything added there later:
-  read it, cross-check every question has exactly one marked correct
-  answer before writing the data file, flag anything ambiguous instead of
-  guessing.
+  everything in it as of 2026-09-09 is now built. Same fastest-path as
+  ever for anything added there later: read it, cross-check every
+  question has exactly one marked correct answer before writing the data
+  file, flag anything ambiguous instead of guessing.
 - SharePoint submission: **wired up and live** as of 2026-09-08.
   `VOC_CONFIG.submitUrl` in `assets/js/config.js` points at Emma's own
   Power Automate flow (its own flow/list, separate from Stationery Order

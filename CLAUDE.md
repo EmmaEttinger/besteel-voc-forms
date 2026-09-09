@@ -96,12 +96,15 @@ BeSteel_Guidelines2024_R2-08.pdf   source of the colour palette / typography
 ## Adding a new VOC
 
 Fastest path: the user pastes raw VOC text into chat, or drops a Word doc
-in the sibling `VOC Content for Claude/` folder — either is fine, and two
-source formats have shown up so far: inline `- Correct` after the right
-option (Angle Grinder-style), and lettered `A) B) C) D)` options with a
+in the sibling `VOC Content for Claude/` folder — either is fine, and
+three source formats have shown up so far: inline `- Correct` after the
+right option (Angle Grinder-style), lettered `A) B) C) D)` options with a
 separate `Correct Answer: X) ...` line underneath each question
-(Bandsaw-style). Both parse into the exact same data shape, so don't ask
-the user to pick one — just handle whichever they send. Turn it directly
+(Bandsaw-style), and lettered options with a ✅ appended directly to the
+correct one instead of a separate line (Hammer Drill-style). All three
+parse into the exact same data shape, so don't ask the user to pick one —
+just handle whichever they send, and expect more formatting variations to
+keep showing up. Turn it directly
 into a new `data/<slug>.js` file following the shape in `data/_template.js`
 / `data/angle-grinder.js`, then add a link to it in `index.html`. Before
 writing the file, verify every question has exactly one clearly marked
@@ -176,17 +179,17 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 25 VOCs done: Abrasive Cut-Off Saw, Angle Grinder, Arc Welding, Bandsaw,
-  Bench Grinder, Guillotine, Overhead Crane, Operation of Oxy Acetylene
-  Set, Operation of Plasma Cutter, Operation of a Truck with Hi-Ab, Steel
-  Erection, MIG Welding, Drill Press, Storage & Handling of Steel in
-  Warehouse Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP
-  Scissor Lift, Linisher, Loading and Unloading Truck (Non-Site
-  Specific), Operation of Power Tools, Operation of Punch & Shear
-  Machine, Truck Loading and Unloading (Yandina), Use of Air Compressor
-  and Pneumatic Tools. Past the original ~21 estimate now — Emma keeps
-  sending more, same pattern each time. 12 of those were built from Word
-  docs in `VOC Content for
+- 26 VOCs done: Abrasive Cut-Off Saw, Angle Grinder, Arc Welding, Bandsaw,
+  Bench Grinder, Guillotine, Hammer Drill, Overhead Crane, Operation of
+  Oxy Acetylene Set, Operation of Plasma Cutter, Operation of a Truck
+  with Hi-Ab, Steel Erection, MIG Welding, Drill Press, Storage &
+  Handling of Steel in Warehouse Racking, Blower, Brake Press, Coil
+  Change, Drop Saw, EWP Scissor Lift, Linisher, Loading and Unloading
+  Truck (Non-Site Specific), Operation of Power Tools, Operation of Punch
+  & Shear Machine, Truck Loading and Unloading (Yandina), Use of Air
+  Compressor and Pneumatic Tools. Past the original ~21 estimate now —
+  Emma keeps sending more, same pattern each time. 12 of those were built
+  from Word docs in `VOC Content for
   Claude/` (2026-09-09) — extracted via a one-off PowerShell docx→text
   script (no pandoc/python in this environment; see scratchpad if that
   script is ever needed again) and cross-checked programmatically (every

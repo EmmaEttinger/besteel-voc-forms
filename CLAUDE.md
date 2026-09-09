@@ -151,26 +151,27 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 12 VOCs done: Angle Grinder, Storage & Handling of Steel in Warehouse
+- 13 VOCs done: Angle Grinder, Storage & Handling of Steel in Warehouse
   Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP Scissor Lift,
-  Linisher, Operation of Power Tools, Operation of Punch & Shear Machine,
-  Truck Loading and Unloading (Yandina), Use of Air Compressor and
-  Pneumatic Tools. The last 10 were built from Word docs in
-  `VOC Content for Claude/` (2026-09-09) — extracted via a one-off
-  PowerShell docx→text script (no pandoc/python in this environment; see
-  scratchpad if that script is ever needed again) and cross-checked
-  programmatically (every question has exactly one "- Correct" marker,
-  every practical item's rating scale matches its source) before writing
-  any data file, specifically so a missing/ambiguous answer never gets
-  guessed into a safety quiz.
-- Held back, waiting on Emma: **Arc Welding** (source docx has a practical
-  section rated Compliant/Non-Compliant/N/A — three options — where every
-  other VOC's practical rating is a two-option Competent/Not Competent;
-  needs a decision on extending `voc-engine.js` for configurable rating
-  labels/option count vs. normalizing the wording) and **Loading and
-  Unloading Truck (Non-Site Specific)** (source docx question 8 has no
-  answer marked "- Correct" — needs Emma to supply which one is right).
-  Source docs for both are in `VOC Content for Claude/`.
+  Linisher, Loading and Unloading Truck (Non-Site Specific), Operation of
+  Power Tools, Operation of Punch & Shear Machine, Truck Loading and
+  Unloading (Yandina), Use of Air Compressor and Pneumatic Tools. 11 of
+  those were built from Word docs in `VOC Content for Claude/`
+  (2026-09-09) — extracted via a one-off PowerShell docx→text script (no
+  pandoc/python in this environment; see scratchpad if that script is
+  ever needed again) and cross-checked programmatically (every question
+  has exactly one "- Correct" marker, every practical item's rating scale
+  matches its source) before writing any data file, specifically so a
+  missing/ambiguous answer never gets guessed into a safety quiz. That
+  check caught Loading and Unloading's question 8 having no marked
+  correct answer — held back, Emma fixed the source doc, rebuilt same day.
+- Held back, waiting on Emma: **Arc Welding** — its practical section
+  rates each item Compliant/Non-Compliant/N/A (three options), where
+  every other VOC's practical rating is two-option Competent/Not
+  Competent. Needs a decision on extending `voc-engine.js` for a
+  configurable rating scale (like Pre-Start's `resultLabels`) vs.
+  normalizing the wording to match everyone else. Source doc is in
+  `VOC Content for Claude/`.
 - The `VOC Content for Claude/` folder (outside this repo, a sibling
   working directory) is where Emma drops source Word docs for new VOCs —
   everything in it as of 2026-09-09 is now either built or in the held-back

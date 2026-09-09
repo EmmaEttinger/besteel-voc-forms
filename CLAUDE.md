@@ -161,12 +161,12 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 15 VOCs done: Angle Grinder, Arc Welding, Bandsaw, Storage & Handling of
-  Steel in Warehouse Racking, Blower, Brake Press, Coil Change, Drop Saw,
-  EWP Scissor Lift, Linisher, Loading and Unloading Truck (Non-Site
-  Specific), Operation of Power Tools, Operation of Punch & Shear Machine,
-  Truck Loading and Unloading (Yandina), Use of Air Compressor and
-  Pneumatic Tools. 12 of those were built from Word docs in `VOC Content for
+- 16 VOCs done: Angle Grinder, Arc Welding, Bandsaw, Guillotine, Storage &
+  Handling of Steel in Warehouse Racking, Blower, Brake Press, Coil
+  Change, Drop Saw, EWP Scissor Lift, Linisher, Loading and Unloading
+  Truck (Non-Site Specific), Operation of Power Tools, Operation of Punch
+  & Shear Machine, Truck Loading and Unloading (Yandina), Use of Air
+  Compressor and Pneumatic Tools. 12 of those were built from Word docs in `VOC Content for
   Claude/` (2026-09-09) — extracted via a one-off PowerShell docx→text
   script (no pandoc/python in this environment; see scratchpad if that
   script is ever needed again) and cross-checked programmatically (every

@@ -80,13 +80,23 @@ BeSteel_Guidelines2024_R2-08.pdf   source of the colour palette / typography
 
 ## Adding a new VOC
 
-Fastest path: the user pastes raw VOC text (questions, options, which one is
-marked "Correct", practical steps) into chat — turn that directly into a new
-`data/<slug>.js` file following the shape in `data/_template.js` /
-`data/angle-grinder.js`, then add a link to it in `index.html`. Don't touch
-`voc-engine.js` or the CSS for a routine new VOC — if a VOC genuinely needs
-new *behaviour* (not just new content), that's the signal to extend the
-engine instead of special-casing it in a data file.
+Fastest path: the user pastes raw VOC text into chat, or drops a Word doc
+in the sibling `VOC Content for Claude/` folder — either is fine, and two
+source formats have shown up so far: inline `- Correct` after the right
+option (Angle Grinder-style), and lettered `A) B) C) D)` options with a
+separate `Correct Answer: X) ...` line underneath each question
+(Bandsaw-style). Both parse into the exact same data shape, so don't ask
+the user to pick one — just handle whichever they send. Turn it directly
+into a new `data/<slug>.js` file following the shape in `data/_template.js`
+/ `data/angle-grinder.js`, then add a link to it in `index.html`. Before
+writing the file, verify every question has exactly one clearly marked
+correct answer — flag anything missing/ambiguous to the user rather than
+guessing, this is safety content. Don't touch `voc-engine.js` or the CSS
+for a routine new VOC — if a VOC genuinely needs new *behaviour* (not just
+new content), that's the signal to extend the engine instead of
+special-casing it in a data file, but check with the user first (see the
+Arc Welding rating-scale example in Status below — normalizing to match
+the existing pattern is often the right call, but it's the user's call).
 
 ## Branding
 
@@ -151,12 +161,12 @@ Power Automate/SharePoint changes were needed to capture it.
 
 ## Status / what's outstanding
 
-- 14 VOCs done: Angle Grinder, Arc Welding, Storage & Handling of Steel in
-  Warehouse Racking, Blower, Brake Press, Coil Change, Drop Saw, EWP
-  Scissor Lift, Linisher, Loading and Unloading Truck (Non-Site Specific),
-  Operation of Power Tools, Operation of Punch & Shear Machine, Truck
-  Loading and Unloading (Yandina), Use of Air Compressor and Pneumatic
-  Tools. 12 of those were built from Word docs in `VOC Content for
+- 15 VOCs done: Angle Grinder, Arc Welding, Bandsaw, Storage & Handling of
+  Steel in Warehouse Racking, Blower, Brake Press, Coil Change, Drop Saw,
+  EWP Scissor Lift, Linisher, Loading and Unloading Truck (Non-Site
+  Specific), Operation of Power Tools, Operation of Punch & Shear Machine,
+  Truck Loading and Unloading (Yandina), Use of Air Compressor and
+  Pneumatic Tools. 12 of those were built from Word docs in `VOC Content for
   Claude/` (2026-09-09) — extracted via a one-off PowerShell docx→text
   script (no pandoc/python in this environment; see scratchpad if that
   script is ever needed again) and cross-checked programmatically (every

@@ -40,3 +40,30 @@ window.PRESTART_CONFIG = {
   companyName: "Besteel Frames",
   logoUrl: "assets/img/besteel-icon.png"
 };
+
+// ============================================================
+// ASSET REGISTER DASHBOARD CONFIG
+// Two separate Power Automate flows — one to read the "Besteel Group
+// Asset Register" SharePoint list live, one to write updates back to
+// it (mark a service/inspection/cert done, change a due date). See
+// SETUP-GUIDE.md, section "3d. Asset Register Dashboard" for exact
+// build steps for both.
+//
+// No sign-in gate on either flow, same trust model as every other
+// tool in this repo (anyone with the link can view and edit) — a
+// deliberate choice, not an oversight; see SETUP-GUIDE.md if that
+// ever needs revisiting.
+//
+// Both blank until built: the dashboard falls back to the bundled
+// sample snapshot in data/asset-register-data.js (read-only, clearly
+// labelled as sample data) so it's still demoable/previewable before
+// the flows exist.
+// ============================================================
+window.ASSET_DASHBOARD_CONFIG = {
+  readUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/35aa6ac401db401d8a3e54f6e38fa531/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tI4FMy39HjvWGo9dGOKWbPvdBvV1T5RSUM6-tKplSLo",
+  writeUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/11/workflows/04cd54d648c54abb9374fe7dd032cd22/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=B3ThrYMurYy9unJWJKBMWkAxYYUOyn-2W8X2rCoQvfU",
+  listUrl: "https://besteel.sharepoint.com/sites/SafetyandTrainingManagement/Lists/Besteel%20Group%20Asset%20Register/AllItems.aspx",
+  itemUrlBase: "https://besteel.sharepoint.com/sites/SafetyandTrainingManagement/Lists/Besteel%20Group%20Asset%20Register/DispForm.aspx?ID=",
+  companyName: "Besteel Frames",
+  logoUrl: "assets/img/besteel-icon.png"
+};

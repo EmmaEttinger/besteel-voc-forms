@@ -181,6 +181,46 @@ use these on a future checklist. Notes-type submissions reuse the
 existing `correctiveActionDetails` payload field for the note text, so no
 Power Automate/SharePoint changes were needed to capture it.
 
+## Asset Register Dashboard — a fourth separate tool in this same repo
+
+`asset-calendar.html` is also not a VOC — it's a Gearbox-style dashboard
+(stat tiles, a Type × Overdue/Soon/Upcoming reminder grid, category
+tiles, a month calendar, and a filterable chronological list) reading
+live from the **Besteel Group Asset Register** SharePoint list (Safety
+and Training Management site) and letting staff mark a
+service/inspection/cert done or change a due date straight from the
+dashboard. Own files again (`assets/css/asset-calendar.css`,
+`assets/js/asset-calendar.js`, `data/asset-register-data.js`), same
+reasoning as Stationery Order/Pre-Start. Full build steps are in
+SETUP-GUIDE.md section **"3d. Asset Register Dashboard."**
+
+**What makes this one different:** the other three tools only ever
+*create* a new SharePoint item (a submitted form). This dashboard also
+**reads the list live** and **updates existing items** — genuinely
+two-way, via two separate Power Automate flows (`readUrl` does a
+"Get items" + Response; `writeUrl` runs a Switch-on-`updateType` with
+one "Update item" branch per due-date column). Until both are built,
+`asset-calendar.js` falls back to the bundled sample snapshot in
+`data/asset-register-data.js` (banner'd as sample data, editing
+disabled) — safe to open and demo before Power Automate is touched.
+
+**No sign-in gate, by design** — Emma chose this deliberately
+(2026-09-10), matching the trust model every other tool here already
+uses (anyone with the link can view and edit, same as anyone with a
+VOC link can submit one). If that ever needs tightening, the fix is a
+Microsoft sign-in gate requiring a one-time Azure AD app registration —
+ask before building it, don't add it unprompted.
+
+**The timezone gotcha matters here too:** SharePoint's REST API returns
+date-only columns as UTC datetimes that are +1 day off the local
+(Brisbane, UTC+10, no DST) date shown in SharePoint's own UI.
+`utcToLocalDateStr()` in `asset-calendar.js` corrects for this on every
+read (confirmed against VEH001's Registration/Certification Expiry:
+API said 2025-08-07T14:00:00Z, SharePoint's UI showed 8/8/2025) — don't
+remove or "simplify" that conversion, and don't re-apply it to dates
+already written by the write flow (those go through Power Automate's
+own date-field UI, which doesn't have this offset).
+
 ## Status / what's outstanding
 
 - 28 VOCs done: Abrasive Cut-Off Saw, Angle Grinder, Arc Welding, Bandsaw,
@@ -244,6 +284,19 @@ Power Automate/SharePoint changes were needed to capture it.
   confirmed live end-to-end; the other 4 share the same flow/list but
   haven't each been individually test-submitted. Still need: the
   SharePoint button/card actually pointed at the live URL.
+- Asset Register Dashboard: **built, not yet connected**. The full
+  dashboard (`asset-calendar.html`) is built and verified locally
+  against the bundled sample data — stat tiles, reminder grid,
+  category tiles, calendar with day-agenda, filterable list, and the
+  edit modal (correctly disabled while sample data is showing) all
+  confirmed working via the local static server. Still need: the two
+  Power Automate flows described in SETUP-GUIDE.md section "3d. Asset
+  Register Dashboard" (`readUrl` for live data, `writeUrl` for edits),
+  pasting their URLs into `ASSET_DASHBOARD_CONFIG` in
+  `assets/js/config.js`, then a real end-to-end test (view live data,
+  edit one item, confirm it lands in SharePoint). Also needs a link
+  added from wherever Emma wants staff to reach it — it's linked from
+  `staff-tools.html` for now, no SharePoint card yet.
 - No test suite / build tooling — this is intentionally plain static files.
   Verify changes by opening `index.html` directly in a browser (or serving
   the folder over any static HTTP server) and clicking through a VOC.

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asset Register Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/asset-calendar.css" />
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">H7MPAZ3PSZVR-62328743-132569</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">af0bd358-3fff-4f95-8779-3d0239bcff7e</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://besteel.sharepoint.com/sites/Management/_layouts/15/DocIdRedir.aspx?ID=H7MPAZ3PSZVR-62328743-132569, H7MPAZ3PSZVR-62328743-132569</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+<div class="ac-header">
+  <img class="ac-logo" src="assets/img/besteel-icon.png" alt="Besteel" />
+  <h1>Asset Register Dashboard</h1>
+  <p>Besteel Frames</p>
+</div>
+
+<div class="ac-container">
+  <div class="ac-header-row">
+    <span class="ac-updated-note" id="ac-updated-note"></span>
+    <button type="button" class="ac-refresh-btn" id="ac-refresh-btn">Refresh</button>
+  </div>
+
+  <div class="ac-banner" id="ac-banner" hidden></div>
+
+  <div class="ac-stats">
+    <div class="ac-stat ac-stat-overdue"><span class="ac-stat-num" id="stat-overdue">0</span><span class="ac-stat-label">Overdue</span></div>
+    <div class="ac-stat ac-stat-soon"><span class="ac-stat-num" id="stat-soon">0</span><span class="ac-stat-label">Due in 30 Days</span></div>
+    <div class="ac-stat ac-stat-upcoming"><span class="ac-stat-num" id="stat-upcoming">0</span><span class="ac-stat-label">Due in 90 Days</span></div>
+    <div class="ac-stat ac-stat-total"><span class="ac-stat-num" id="stat-total">0</span><span class="ac-stat-label">Tracked Dates</span></div>
+  </div>
+
+  <div class="ac-card">
+    <h2 style="margin:0 0 12px;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--khaki-brown);">Reminders</h2>
+    <div class="ac-table-scroll">
+      <table class="ac-reminder-grid">
+        <thead>
+          <tr><th>Type</th><th>Overdue</th><th>Soon</th><th>Upcoming</th></tr>
+        </thead>
+        <tbody id="ac-reminder-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="ac-card">
+    <h2 style="margin:0 0 12px;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--khaki-brown);">Categories</h2>
+    <div class="ac-category-grid" id="ac-category-grid"></div>
+  </div>
+
+  <div class="ac-card">
+    <div class="ac-filters">
+      <input type="text" id="filter-search" placeholder="Search asset, ID..." />
+      <select id="filter-category"><option value="">All categories</option></select>
+      <select id="filter-site"><option value="">All sites</option></select>
+    </div>
+  </div>
+
+  <div class="ac-tabs">
+    <button type="button" class="ac-tab active" data-tab="calendar">Calendar</button>
+    <button type="button" class="ac-tab" data-tab="list">List</button>
+  </div>
+
+  <div class="ac-card" id="panel-calendar">
+    <div class="ac-cal-header">
+      <button type="button" class="ac-cal-nav-btn" id="cal-prev">&lsaquo;</button>
+      <h2 id="cal-month-label"></h2>
+      <button type="button" class="ac-cal-nav-btn" id="cal-next">&rsaquo;</button>
+      <button type="button" class="ac-cal-today-btn" id="cal-today">Today</button>
+    </div>
+    <div class="ac-cal-grid" id="cal-grid"></div>
+    <div class="ac-day-agenda" id="day-agenda" hidden></div>
+  </div>
+
+  <div class="ac-card" id="panel-list" hidden>
+    <div id="list-content"></div>
+  </div>
+
+  <p class="ac-footnote">
+    <a id="sp-list-link" href="#" target="_blank" rel="noopener">Open the live Asset Register in SharePoint ↗</a>
+  </p>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="data/asset-register-data.js"></script>
+<script src="assets/js/asset-calendar.js"></script>
+</body>
+</html>

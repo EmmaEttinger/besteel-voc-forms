@@ -458,6 +458,137 @@ into `data/prestart-<slug>.js` and add a link to it in `index.html`. The
 PDFs for all four are already sitting in the Safety Culture Content
 Downloads folder.
 
+## 3d. Asset Register Dashboard — live read + write to SharePoint
+
+`asset-calendar.html` is a fourth separate tool — a Gearbox-style
+dashboard (stat tiles, a Type × Overdue/Soon/Upcoming reminder grid,
+category tiles, a month calendar with colour-coded due dates, and a
+filterable chronological list) reading live from the **Besteel Group
+Asset Register** SharePoint list (Safety and Training Management site)
+and letting staff mark a service/inspection/cert done or change a due
+date straight from the dashboard, without opening the SharePoint item.
+Own files again, same reasoning as every other tool here:
+
+```
+asset-calendar.html          the dashboard page
+assets/css/asset-calendar.css    its styling (palette duplicated from voc-engine.css)
+assets/js/asset-calendar.js      fetch/normalize/render/filter/edit logic
+data/asset-register-data.js      bundled sample snapshot — fallback only, see its header comment
+```
+
+**Different from the other three tools in one important way:** VOC,
+Stationery, and Pre-Start all only ever *create* a new SharePoint item
+(a submitted form). This dashboard also **reads live data back** and
+**updates existing items** — genuinely two-way. That needs two
+separate Power Automate flows instead of one.
+
+**No sign-in gate, by design.** Emma chose this deliberately (2026-09-10)
+over a Microsoft sign-in gate or a shared PIN, to match the trust model
+every other tool here already uses: anyone with the dashboard link can
+view the register *and* edit due dates, the same way anyone with a VOC
+link can submit one. If that trust model ever needs revisiting (e.g.
+the link ends up somewhere more exposed than intended), the fix is to
+add a Microsoft sign-in gate — ask, and I'll wire it up; it needs a
+one-time Azure AD app registration your IT would need to create.
+
+**Until the flows below are built,** the dashboard falls back to the
+bundled sample snapshot in `data/asset-register-data.js` (clearly
+banner'd as sample data) and disables editing — so it's safe to open
+and demo right now, before you touch Power Automate at all.
+
+### Read flow — pulls the list live
+
+1. [make.powerautomate.com](https://make.powerautomate.com) → **Create
+   → Instant cloud flow**. Name it "Asset Register - Get Data". Trigger:
+   **"When an HTTP request is received"** → Create.
+2. On the trigger card, set **"Who can trigger the flow?" to "Anyone"**
+   (same gotcha as Stationery Order's flow — the default forces a
+   Microsoft sign-in token, which a public page can't provide). Leave
+   the request body schema blank — this flow doesn't need any input.
+   Note: even with no schema, the trigger only accepts **POST**
+   (confirmed 2026-09-10 — a plain GET gets rejected with
+   `TriggerRequestMethodNotValid`), so `asset-calendar.js` calls it
+   with `fetch(url, {method: "POST", body: "{}"})` rather than a bare
+   GET.
+3. **+ New step → SharePoint → Get items.**
+   - Site Address: `https://besteel.sharepoint.com/sites/SafetyandTrainingManagement`
+   - List Name: **Besteel Group Asset Register**
+   - Leave Filter Query blank (return every item).
+   - Click the action's **⋯ → Settings → Pagination → On**, Threshold
+     `5000` — SharePoint's default page size is 100, so without this
+     the dashboard silently stops seeing assets once the list passes
+     100 rows.
+4. **+ New step → search for "Response"** (the built-in Request/Response
+   connector, not SharePoint) → **Response**.
+   - Status Code: `200`
+   - Body: click the field, switch to **Expression**, enter
+     `body('Get_items')?['value']` — this returns just the array of
+     items, which is what `asset-calendar.js` expects.
+5. Save. Click the trigger card to reveal the **HTTP URL** → copy it →
+   paste into `ASSET_DASHBOARD_CONFIG.readUrl` in `assets/js/config.js`.
+6. Test: open `asset-calendar.html`, click **Refresh** — the sample-data
+   banner should disappear and the stat tiles should reflect the real
+   list.
+
+### Write flow — marks things done / changes a due date
+
+1. **Create → Instant cloud flow** → "Asset Register - Update Item" →
+   trigger **"When an HTTP request is received"** → **"Who can trigger
+   the flow?" → "Anyone"** (same reason as above).
+2. **"Use sample payload to generate schema"**, paste:
+   ```json
+   {
+     "itemId": 29,
+     "updateType": "service",
+     "lastDate": "2026-05-01",
+     "nextDate": "2026-11-01",
+     "expiryDate": ""
+   }
+   ```
+   This gives you dynamic-content fields for `itemId`, `updateType`,
+   `lastDate`, `nextDate`, `expiryDate`. The dashboard only ever fills
+   in the fields relevant to whatever was edited — `expiryDate` alone
+   for a rego/cert update, or `lastDate`+`nextDate` for everything else
+   — and leaves the rest blank, so every branch below only maps the
+   columns it actually needs.
+3. **+ New step → Control → Switch.** On: `updateType` (dynamic content).
+   Add one case per row below, each containing a single **SharePoint →
+   Update item** action (Site Address / List Name same as the read
+   flow; **Id** = `itemId` dynamic content) mapping only that row's
+   column(s) — pick columns by their normal display name in Power
+   Automate's own field picker, no internal names needed:
+
+   | Case value | Column(s) to map |
+   |---|---|
+   | `rego` | Registration/Certification Expiry ← `expiryDate` |
+   | `service` | Service - Last Date ← `lastDate`; Service - Next Due ← `nextDate` |
+   | `coi` | COI - Last Date ← `lastDate`; COI - Next Due ← `nextDate` |
+   | `wheel` | Wheel Rotation - Last Date ← `lastDate`; Wheel Rotation - Next Due ← `nextDate` |
+   | `crane` | Crane Service - Last Date ← `lastDate`; Crane Service - Next Due ← `nextDate` |
+   | `gas` | Gas Certification - Last Date ← `lastDate`; Gas Certification - Next Due ← `nextDate` |
+   | `inspection` | Last Inspection Date ← `lastDate`; Next Inspection Due Date ← `nextDate` |
+
+   Leave the **Default** case empty — an unrecognised `updateType`
+   should quietly do nothing rather than error the whole flow.
+4. Save. Copy the trigger's **HTTP URL** → paste into
+   `ASSET_DASHBOARD_CONFIG.writeUrl` in `assets/js/config.js`.
+5. Test: on the dashboard, click **Update** on any item, fill in a date,
+   Save — confirm the change lands on the real SharePoint item (open it
+   via the card's "Open in SharePoint ↗" link) and the dashboard's
+   Refresh picks it up.
+
+### Gotcha to watch for
+
+SharePoint stores date-only columns as UTC datetimes that are **+1 day**
+off from the local (Brisbane, UTC+10, no DST) date shown in its own UI
+— `asset-calendar.js` corrects for this on read (see
+`utcToLocalDateStr` in that file). The write flow doesn't need the same
+correction: Power Automate's "Update item" action, fed a plain
+`YYYY-MM-DD` string through its own date-field UI, stores it the same
+way manually typing that date into the SharePoint form would. If a
+saved date ever looks one day off in SharePoint, check here first
+before assuming the dashboard's read-side correction is wrong.
+
 ## 4. Adding your other 20+ VOCs
 
 By far the fastest way: **paste the raw VOC text to me** (exactly like you did

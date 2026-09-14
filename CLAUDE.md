@@ -253,6 +253,20 @@ own date-field UI, which doesn't have this offset).
   version (à la Pre-Start's `resultLabels`) — don't silently normalize a
   second time without asking, since this one only went one way because
   Emma chose it.
+- Bandsaw's manager added a 10-item practical section after the VOC was
+  already built and live (2026-09-14) — `data/bandsaw.js` gained a
+  `practical` block (standard Competent/Not Competent items, no rating-
+  scale question this time) using the source table's "Practical
+  Assessment Question / Task" column as each item's `title` and "What
+  the Supervisor Should Observe" as its `procedure` bullet. No
+  SharePoint/Power Automate changes were needed for this — the shared
+  VOC flow/list already has the PracticalRequired/SupervisorName/
+  OverallOutcome/PracticalItemsJSON columns from the VOCs that already
+  used a practical section (Angle Grinder, Drop Saw, Operation of Power
+  Tools, Arc Welding), so a VOC gaining a practical section after the
+  fact is just new content flowing into columns that already exist —
+  same will be true if another already-live VOC gets a practical section
+  added later.
 - The `VOC Content for Claude/` folder (outside this repo, a sibling
   working directory) is where Emma drops source Word docs for new VOCs —
   everything in it as of 2026-09-09 is now built. Same fastest-path as

@@ -125,5 +125,85 @@ window.VOC_DATA = {
       ],
       correctIndex: 1
     }
-  ]
+  ],
+
+  practical: {
+    gateQuestion: {
+      question: "Do you need to complete a Practical VOC?",
+      options: ["Yes", "No", "N/A"]
+    },
+    supervisorNameLabel: "Supervisor's Name",
+    items: [
+      {
+        id: "p1",
+        title: "1. Demonstrate the required pre-start inspection of the band saw before operation.",
+        procedure: [
+          "Employee checks general machine condition, guards, blade condition/tension, controls, hydraulics, coolant system and surrounding work area; identifies any obvious faults before use."
+        ]
+      },
+      {
+        id: "p2",
+        title: "2. Demonstrate how you would check the machine's safety controls, including the emergency stop.",
+        procedure: [
+          "Correctly identifies and tests the emergency stop and confirms controls/safety mechanisms are operational before commencing work."
+        ]
+      },
+      {
+        id: "p3",
+        title: "3. Select the appropriate PPE and prepare yourself to safely operate the band saw.",
+        procedure: [
+          "Wears required PPE; clothing is close-fitting; no loose jewellery/rings or other items that could become caught in moving equipment."
+        ]
+      },
+      {
+        id: "p4",
+        title: "4. Load and correctly position a piece of material ready for cutting.",
+        procedure: [
+          "Uses safe manual handling; positions material correctly; supports long/heavy material where required; keeps hands clear of pinch and cutting areas."
+        ]
+      },
+      {
+        id: "p5",
+        title: "5. Demonstrate how to correctly secure the material in the band saw before making a cut.",
+        procedure: [
+          "Correctly positions and firmly secures the workpiece using the hydraulic vice; confirms material is stable before operating the saw."
+        ]
+      },
+      {
+        id: "p6",
+        title: "6. Set the band saw to a nominated cutting angle provided by the supervisor.",
+        procedure: [
+          "Safely sets the required mitre angle, uses the angle/digital readout correctly where applicable, locks the head/mitre mechanism and verifies the setup before cutting."
+        ]
+      },
+      {
+        id: "p7",
+        title: "7. Set up the machine for the material being cut and demonstrate a normal cutting cycle.",
+        procedure: [
+          "Selects/adjusts appropriate blade speed and hydraulic feed/cutting pressure where required, uses coolant appropriately, keeps hands clear and allows the machine to cut without forcing the cutting head."
+        ]
+      },
+      {
+        id: "p8",
+        title: "8. While operating the saw, demonstrate what you monitor to determine whether the machine is cutting safely and correctly.",
+        procedure: [
+          "Monitors blade/cut, material security, coolant and machine operation; recognises abnormal noise, vibration, clicking, jamming or other signs of a problem and responds appropriately."
+        ]
+      },
+      {
+        id: "p9",
+        title: "9. Demonstrate the correct response to a simulated jam, blade problem or other machine fault.",
+        procedure: [
+          "Stops the machine safely, waits for all movement to cease and isolates/locks out the machine before attempting to clear material or make adjustments; reports faults to the supervisor where required."
+        ]
+      },
+      {
+        id: "p10",
+        title: "10. Complete the cut and demonstrate the correct shutdown and post-operation procedure.",
+        procedure: [
+          "Allows cutting cycle to finish safely; confirms blade has completely stopped before handling material; switches off machine, resets guards, removes material safely, cleans swarf/offcuts, leaves area tidy and reports any faults."
+        ]
+      }
+    ]
+  }
 };

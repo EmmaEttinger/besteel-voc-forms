@@ -5,11 +5,12 @@
 // ============================================================
 
 window.VOC_CONFIG = {
-  // Paste the "HTTP POST URL" from your Power Automate
-  // "When an HTTP request is received" trigger here once you've built it.
-  // Leave blank while testing locally — the form will fall back to
-  // downloading a JSON file instead of submitting, so no data is lost.
-  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/19/workflows/c94f91bf84eb4d978a338a2c2b8372f1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6qHBjb1DmrsVRTF_Fauw-hVCA8zl-jeeyyP2OoHr6bM",
+  // This tool has moved to its own repo/site (besteel-voc) with a
+  // real submission URL. This copy is legacy/unused, so it's left
+  // blank on purpose -- an empty value here just falls back to
+  // downloading a JSON file, which is the safe behaviour for a page
+  // nobody should be visiting anymore.
+  submitUrl: "",
 
   // Optional: shown in the header of every VOC form.
   companyName: "Besteel Frames",
@@ -18,25 +19,21 @@ window.VOC_CONFIG = {
 
 // ============================================================
 // STATIONERY ORDER CONFIG
-// Separate Power Automate flow from the VOC one above — see
-// SETUP-GUIDE.md for the suggested SharePoint list + email setup.
+// submitUrl is injected at deploy time from a GitHub Actions
+// secret -- never commit the real Power Automate URL here.
 // ============================================================
 window.STATIONERY_CONFIG = {
-  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/21/workflows/0f8f24a9e01d45a88b1f39ba0b8be87f/triggers/manual/paths/invoke?api-version=1",
+  submitUrl: "__STATIONERY_SUBMIT_URL__",
   companyName: "Besteel Frames",
   logoUrl: "assets/img/besteel-icon.png"
 };
 
 // ============================================================
 // PRE-START CHECKLIST CONFIG
-// Separate Power Automate flow again — needs its own SharePoint
-// list (see SETUP-GUIDE.md, section "3c. Pre-Start Checklists").
-// Blank until that flow is built: forms fall back to downloading
-// a JSON file so a completed checklist is never silently lost,
-// and "Print / Save as PDF" always works regardless.
+// submitUrl is injected at deploy time -- see above.
 // ============================================================
 window.PRESTART_CONFIG = {
-  submitUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/19/workflows/f70a3c420d044c4dafe25beda46bd884/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OZhrv3NfyAfWWVQBRXmT9Ozj8L5smEpb8geIcBFi8ns",
+  submitUrl: "__PRESTART_SUBMIT_URL__",
   companyName: "Besteel Frames",
   logoUrl: "assets/img/besteel-icon.png"
 };
@@ -60,8 +57,10 @@ window.PRESTART_CONFIG = {
 // the flows exist.
 // ============================================================
 window.ASSET_DASHBOARD_CONFIG = {
-  readUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/35aa6ac401db401d8a3e54f6e38fa531/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=tI4FMy39HjvWGo9dGOKWbPvdBvV1T5RSUM6-tKplSLo",
-  writeUrl: "https://default7bf668ccdb6040b8ba089102336e87.a3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/11/workflows/04cd54d648c54abb9374fe7dd032cd22/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=B3ThrYMurYy9unJWJKBMWkAxYYUOyn-2W8X2rCoQvfU",
+  // readUrl/writeUrl are injected at deploy time from GitHub Actions
+  // secrets -- never commit the real Power Automate URLs here.
+  readUrl: "__ASSET_READ_URL__",
+  writeUrl: "__ASSET_WRITE_URL__",
   listUrl: "https://besteel.sharepoint.com/sites/SafetyandTrainingManagement/Lists/Besteel%20Group%20Asset%20Register/AllItems.aspx",
   itemUrlBase: "https://besteel.sharepoint.com/sites/SafetyandTrainingManagement/Lists/Besteel%20Group%20Asset%20Register/DispForm.aspx?ID=",
   companyName: "Besteel Frames",

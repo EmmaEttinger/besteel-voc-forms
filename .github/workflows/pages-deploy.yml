@@ -21,31 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject submission URL secrets into config.js
-        env:
-          STATIONERY_SUBMIT_URL: ${{ secrets.STATIONERY_SUBMIT_URL }}
-          PRESTART_SUBMIT_URL: ${{ secrets.PRESTART_SUBMIT_URL }}
-          ASSET_READ_URL: ${{ secrets.ASSET_READ_URL }}
-          ASSET_WRITE_URL: ${{ secrets.ASSET_WRITE_URL }}
-        run: |
-          node -e "
-          const fs = require('fs');
-          const p = 'assets/js/config.js';
-          let c = fs.readFileSync(p, 'utf8');
-          c = c.split('__STATIONERY_SUBMIT_URL__').join(process.env.STATIONERY_SUBMIT_URL || '');
-          c = c.split('__PRESTART_SUBMIT_URL__').join(process.env.PRESTART_SUBMIT_URL || '');
-          c = c.split('__ASSET_READ_URL__').join(process.env.ASSET_READ_URL || '');
-          c = c.split('__ASSET_WRITE_URL__').join(process.env.ASSET_WRITE_URL || '');
-          fs.writeFileSync(p, c);
-          "
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: "site"
 
   deploy:
     environment:
